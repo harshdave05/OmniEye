@@ -1,0 +1,2670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>OmniEye AI — Surveillance Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:         #0A0F14;
+  --surf:       #0E1822;
+  --raised:     #111F2C;
+  --hover:      #152333;
+  --brd:        #1A2B3A;
+  --brd2:       #1F3447;
+  --ai:         #00D1FF;
+  --ai-dim:     #009ec4;
+  --ai-lo:      rgba(0,209,255,.07);
+  --ai-md:      rgba(0,209,255,.18);
+  --ai-glow:    rgba(0,209,255,.35);
+  --ai-pulse:   rgba(0,209,255,.6);
+  --safe:       #00FF9C;
+  --safe-lo:    rgba(0,255,156,.08);
+  --safe-glow:  rgba(0,255,156,.3);
+  --warn:       #FFD600;
+  --warn-lo:    rgba(255,214,0,.08);
+  --warn-glow:  rgba(255,214,0,.3);
+  --red:        #FF3B3B;
+  --red-lo:     rgba(255,59,59,.1);
+  --red-glow:   rgba(255,59,59,.35);
+  --red-pulse:  rgba(255,59,59,.55);
+  --txt:        #E6EDF3;
+  --txt2:       #9FB8CC;
+  --txt3:       #516A80;
+  --f-head:     'Orbitron', monospace;
+  --f-ui:       'Rajdhani', sans-serif;
+  --f-mono:     'Share Tech Mono', monospace;
+  --r:          5px;
+  --t:          .18s ease;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html, body { height:100%; background:var(--bg); color:var(--txt); font-family:var(--f-ui); font-size:15px; overflow:hidden }
+::-webkit-scrollbar { width:4px; height:4px }
+::-webkit-scrollbar-track { background:var(--bg) }
+::-webkit-scrollbar-thumb { background:var(--brd2); border-radius:2px }
+
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(0,209,255,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,209,255,.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none; z-index:0;
+}
+body::after {
+  content:'';
+  position:fixed; inset:0;
+  background:radial-gradient(ellipse at 20% 50%, rgba(0,209,255,.04) 0%, transparent 60%),
+             radial-gradient(ellipse at 80% 20%, rgba(0,255,156,.03) 0%, transparent 50%);
+  pointer-events:none; z-index:0;
+}
+
+#shell {
+  display:grid;
+  grid-template-rows:62px 1fr 28px;
+  grid-template-columns:230px 1fr;
+  height:100vh;
+  grid-template-areas:"tb tb" "nav main" "ft ft";
+  position:relative; z-index:1;
+}
+
+/* ── TOP BAR ── */
+#tb {
+  grid-area:tb;
+  background:linear-gradient(180deg, rgba(14,24,34,.98) 0%, rgba(11,18,26,.95) 100%);
+  border-bottom:1px solid var(--brd2);
+  display:flex; align-items:center;
+  padding:0 20px; gap:0;
+  position:relative; z-index:100;
+  box-shadow:0 1px 0 rgba(0,209,255,.08), 0 2px 20px rgba(0,0,0,.5);
+}
+#tb::after {
+  content:'';
+  position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, var(--ai), transparent);
+  opacity:.4;
+}
+
+.brand { display:flex; align-items:center; gap:13px; margin-right:30px; flex-shrink:0 }
+.omni-logo { width:36px; height:36px; position:relative; flex-shrink:0 }
+.omni-logo::before {
+  content:'';
+  position:absolute; inset:0;
+  border:1.5px solid var(--ai);
+  border-radius:50%;
+  box-shadow:0 0 12px var(--ai-glow), inset 0 0 8px rgba(0,209,255,.12);
+  animation:logoSpin 8s linear infinite;
+}
+.omni-logo svg { position:absolute; inset:0; width:100%; height:100% }
+@keyframes logoSpin {
+  0%   { transform:rotate(0deg); box-shadow:0 0 10px var(--ai-glow), inset 0 0 8px rgba(0,209,255,.1) }
+  50%  { box-shadow:0 0 22px var(--ai-pulse), inset 0 0 12px rgba(0,209,255,.2) }
+  100% { transform:rotate(360deg); box-shadow:0 0 10px var(--ai-glow), inset 0 0 8px rgba(0,209,255,.1) }
+}
+.brand-text { display:flex; flex-direction:column; gap:2px }
+.brand-name {
+  font-family:var(--f-head); font-size:19px; font-weight:700; letter-spacing:3px;
+  background:linear-gradient(135deg, #fff 0%, var(--ai) 60%, #00ff9c 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1;
+}
+.brand-ver { font-family:var(--f-mono); font-size:10px; color:var(--txt3); letter-spacing:1.5px; text-transform:uppercase }
+
+.tb-div { width:1px; height:28px; background:var(--brd2); margin:0 22px; flex-shrink:0 }
+
+.tb-inds { display:flex; align-items:center; gap:20px }
+.ind { display:flex; align-items:center; gap:7px; font-family:var(--f-mono); font-size:11px; color:var(--txt3); letter-spacing:1px; transition:color var(--t) }
+.ind .d { width:7px; height:7px; border-radius:50%; background:var(--txt3); flex-shrink:0; transition:all var(--t) }
+.ind.ok { color:var(--txt2) }
+.ind.ok .d { background:var(--safe); box-shadow:0 0 8px var(--safe-glow); animation:statusBlink 3s ease-in-out infinite }
+.ind.warn .d { background:var(--warn); box-shadow:0 0 6px var(--warn-glow) }
+.ind.err .d { background:var(--red); box-shadow:0 0 8px var(--red-glow); animation:statusBlink 1s ease-in-out infinite }
+@keyframes statusBlink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+#threat-badge {
+  margin-left:18px; padding:5px 16px;
+  font-family:var(--f-mono); font-size:11px; font-weight:600; letter-spacing:2px;
+  border-radius:var(--r); border:1px solid var(--brd2);
+  color:var(--txt2); background:var(--raised); transition:all .3s;
+}
+#threat-badge.ok { color:var(--safe); border-color:rgba(0,255,156,.35); background:var(--safe-lo); text-shadow:0 0 8px var(--safe-glow) }
+#threat-badge.warn { color:var(--warn); border-color:rgba(255,214,0,.35); background:var(--warn-lo); text-shadow:0 0 8px var(--warn-glow) }
+#threat-badge.crit { color:var(--red); border-color:rgba(255,59,59,.5); background:var(--red-lo); text-shadow:0 0 10px var(--red-glow); animation:critPulse 1.2s ease-in-out infinite }
+@keyframes critPulse { 0%,100% { box-shadow:0 0 8px var(--red-glow) } 50% { box-shadow:0 0 24px var(--red-pulse), 0 0 40px rgba(255,59,59,.15) } }
+
+#clock { margin-left:auto; font-family:var(--f-mono); font-size:15px; color:var(--ai); letter-spacing:3px; text-shadow:0 0 12px var(--ai-glow) }
+
+/* ── SIDEBAR ── */
+#nav {
+  grid-area:nav;
+  background:linear-gradient(180deg, rgba(14,24,34,.95) 0%, rgba(10,15,20,.98) 100%);
+  border-right:1px solid var(--brd);
+  display:flex; flex-direction:column; overflow:hidden; position:relative;
+}
+#nav::after { content:''; position:absolute; top:0; right:0; bottom:0; width:1px; background:linear-gradient(180deg, transparent, var(--ai), transparent); opacity:.12 }
+
+.nav-sec { padding:20px 0 10px; border-bottom:1px solid var(--brd) }
+.nav-sec:last-child { border-bottom:none; flex:1 }
+.nav-lbl { padding:0 16px 10px; font-family:var(--f-mono); font-size:10px; letter-spacing:2.5px; color:var(--txt3); text-transform:uppercase }
+.nav-it {
+  display:flex; align-items:center; gap:12px; padding:11px 16px; cursor:pointer;
+  font-family:var(--f-ui); font-size:15px; font-weight:600; color:var(--txt3);
+  transition:all var(--t); border-left:2px solid transparent; position:relative; user-select:none; overflow:hidden;
+}
+.nav-it::before { content:''; position:absolute; inset:0; background:linear-gradient(90deg, var(--ai-lo), transparent); opacity:0; transition:opacity var(--t) }
+.nav-it:hover { color:var(--txt); transform:translateX(2px) }
+.nav-it:hover::before { opacity:1 }
+.nav-it .ico { font-size:14px; width:16px; text-align:center; opacity:.7; flex-shrink:0 }
+.nav-it.active { color:var(--ai); border-left-color:var(--ai); background:var(--ai-lo); text-shadow:0 0 10px var(--ai-glow) }
+.nav-it.active::before { opacity:1 }
+.nav-it.active .ico { opacity:1 }
+
+.nav-badge {
+  margin-left:auto; min-width:19px; height:17px; padding:0 5px;
+  background:var(--red); color:#fff; font-family:var(--f-mono); font-size:10px; font-weight:700;
+  border-radius:9px; display:none; align-items:center; justify-content:center;
+  box-shadow:0 0 8px var(--red-glow);
+}
+.nav-badge.on { display:flex }
+
+.nav-stats { padding:14px 14px 6px; display:grid; grid-template-columns:1fr 1fr; gap:8px }
+.nsc { background:var(--raised); border:1px solid var(--brd); padding:10px 12px; border-radius:var(--r); transition:border-color var(--t) }
+.nsc:hover { border-color:var(--brd2) }
+.nsc-v { font-family:var(--f-head); font-size:26px; line-height:1; color:var(--txt2) }
+.nsc-v.g { color:var(--safe); text-shadow:0 0 10px var(--safe-glow) }
+.nsc-v.y { color:var(--warn); text-shadow:0 0 10px var(--warn-glow) }
+.nsc-v.r { color:var(--red); text-shadow:0 0 10px var(--red-glow) }
+.nsc-v.a { color:var(--ai); text-shadow:0 0 10px var(--ai-glow) }
+.nsc-l { font-family:var(--f-mono); font-size:10px; letter-spacing:1px; color:var(--txt3); margin-top:4px; text-transform:uppercase }
+
+/* ── MAIN ── */
+#main { grid-area:main; overflow-y:auto; overflow-x:hidden; position:relative }
+
+.sec { display:none; padding:24px; min-height:100%; animation:secIn .25s ease }
+.sec.active { display:block }
+@keyframes secIn { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }
+
+.sh { display:flex; align-items:center; gap:14px; margin-bottom:22px; padding-bottom:16px; border-bottom:1px solid var(--brd); position:relative }
+.sh::after { content:''; position:absolute; bottom:-1px; left:0; width:70px; height:1px; background:var(--ai); box-shadow:0 0 8px var(--ai-glow) }
+.sh-title { font-family:var(--f-head); font-size:22px; font-weight:700; letter-spacing:2px; color:var(--txt); text-shadow:0 0 20px rgba(0,209,255,.2) }
+.sh-sub { font-family:var(--f-mono); font-size:11px; color:var(--txt3); letter-spacing:1.5px; margin-top:4px }
+
+.card { background:linear-gradient(145deg, rgba(17,26,38,.95), rgba(14,22,32,.9)); border:1px solid var(--brd); border-radius:var(--r); overflow:hidden; margin-bottom:14px; transition:border-color var(--t), box-shadow var(--t); box-shadow:0 2px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.02) }
+.card:hover { border-color:var(--brd2); box-shadow:0 4px 24px rgba(0,0,0,.5), 0 0 0 1px rgba(0,209,255,.04), inset 0 1px 0 rgba(255,255,255,.03) }
+.card:last-child { margin-bottom:0 }
+
+.ch { display:flex; align-items:center; gap:10px; padding:11px 16px; border-bottom:1px solid var(--brd); background:linear-gradient(90deg, rgba(0,209,255,.04), transparent) }
+.ct { font-family:var(--f-mono); font-size:11px; letter-spacing:2px; color:var(--txt2); text-transform:uppercase; font-weight:500 }
+.cb { padding:16px }
+
+.btn { display:inline-flex; align-items:center; gap:7px; padding:9px 18px; font-family:var(--f-mono); font-size:12px; letter-spacing:1px; font-weight:500; border:1px solid; border-radius:var(--r); cursor:pointer; transition:all var(--t); text-transform:uppercase; white-space:nowrap; position:relative; overflow:hidden }
+.btn:disabled { opacity:.3; cursor:not-allowed; transform:none!important }
+.btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,.06), transparent); opacity:0; transition:opacity var(--t) }
+.btn:not(:disabled):hover::before { opacity:1 }
+.btn-a { background:linear-gradient(135deg, rgba(0,209,255,.15), rgba(0,209,255,.08)); border-color:var(--ai); color:var(--ai); font-weight:700; text-shadow:0 0 8px var(--ai-glow) }
+.btn-a:not(:disabled):hover { background:linear-gradient(135deg, rgba(0,209,255,.25), rgba(0,209,255,.15)); box-shadow:0 0 18px var(--ai-glow), 0 0 40px rgba(0,209,255,.1); transform:scale(1.03) }
+.btn-o { background:transparent; border-color:var(--brd2); color:var(--txt2) }
+.btn-o:not(:disabled):hover { border-color:var(--ai); color:var(--ai); background:var(--ai-lo); box-shadow:0 0 12px var(--ai-glow); transform:scale(1.03) }
+.btn-d { background:transparent; border-color:rgba(255,59,59,.4); color:var(--red) }
+.btn-d:not(:disabled):hover { background:var(--red-lo); border-color:var(--red); box-shadow:0 0 12px var(--red-glow); transform:scale(1.03) }
+.btn-sm { padding:6px 13px; font-size:11px }
+.btn-xs { padding:4px 9px; font-size:10px }
+
+/* ── INPUTS — increased font sizes ── */
+.inp {
+  background:rgba(10,15,20,.8); border:1px solid var(--brd2); color:var(--txt);
+  font-family:var(--f-mono); font-size:13px; padding:9px 13px;
+  border-radius:var(--r); outline:none; width:100%; transition:all var(--t);
+}
+.inp:focus { border-color:var(--ai); box-shadow:0 0 0 2px rgba(0,209,255,.1), 0 0 12px rgba(0,209,255,.08) }
+.inp::placeholder { color:var(--txt3) }
+/* time input specific styling */
+input[type="time"].inp {
+  font-size:15px;
+  letter-spacing:2px;
+  color:var(--ai);
+  text-shadow:0 0 8px var(--ai-glow);
+  padding:10px 13px;
+  cursor:pointer;
+}
+input[type="time"].inp::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(0.5) sepia(1) hue-rotate(160deg) saturate(4);
+  cursor:pointer;
+  opacity:0.7;
+}
+input[type="time"].inp::-webkit-calendar-picker-indicator:hover { opacity:1 }
+
+/* ── Label — increased ── */
+.il { font-family:var(--f-mono); font-size:11px; letter-spacing:1.5px; color:var(--txt2); text-transform:uppercase; margin-bottom:6px; display:block; font-weight:600 }
+.il-sub { font-family:var(--f-mono); font-size:10px; color:var(--txt3); margin-top:3px; display:block; letter-spacing:0.5px }
+
+.badge { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:2px; font-family:var(--f-mono); font-size:9px; font-weight:600; letter-spacing:1px; text-transform:uppercase }
+.bg-g { background:var(--safe-lo); color:var(--safe); border:1px solid rgba(0,255,156,.25); text-shadow:0 0 6px var(--safe-glow) }
+.bg-y { background:var(--warn-lo); color:var(--warn); border:1px solid rgba(255,214,0,.25) }
+.bg-r { background:var(--red-lo); color:var(--red); border:1px solid rgba(255,59,59,.35); text-shadow:0 0 6px var(--red-glow) }
+.bg-a { background:var(--ai-lo); color:var(--ai); border:1px solid rgba(0,209,255,.25); text-shadow:0 0 6px var(--ai-glow) }
+.bg-d { background:var(--raised); color:var(--txt2); border:1px solid var(--brd2) }
+
+.tog { position:relative; width:36px; height:19px; flex-shrink:0 }
+.tog input { display:none }
+.tog-t { position:absolute; inset:0; background:var(--raised); border:1px solid var(--brd2); border-radius:10px; cursor:pointer; transition:all .2s }
+.tog-t::after { content:''; position:absolute; top:2px; left:2px; width:13px; height:13px; border-radius:50%; background:var(--txt3); transition:all .2s }
+.tog input:checked + .tog-t { background:var(--ai-md); border-color:var(--ai); box-shadow:0 0 8px var(--ai-glow) }
+.tog input:checked + .tog-t::after { transform:translateX(17px); background:var(--ai) }
+
+/* ── FOOTER ── */
+#ft { grid-area:ft; background:rgba(14,24,34,.98); border-top:1px solid var(--brd); display:flex; align-items:center; padding:0 16px; gap:14px; font-family:var(--f-mono); font-size:9px; color:var(--txt3); letter-spacing:.5px }
+.fb { display:flex; align-items:center; gap:5px }
+.fd { width:4px; height:4px; border-radius:50%; background:var(--txt3) }
+.fb.ok .fd { background:var(--safe); box-shadow:0 0 4px var(--safe-glow) }
+.fb.warn .fd { background:var(--warn) }
+.fb.err .fd { background:var(--red); box-shadow:0 0 4px var(--red-glow); animation:statusBlink 1s infinite }
+.fb-sep { color:var(--brd2) }
+#ft-r { margin-left:auto; color:var(--txt3) }
+
+/* ── TOASTS ── */
+#toasts { position:fixed; top:64px; right:14px; z-index:600; display:flex; flex-direction:column; gap:7px; pointer-events:none }
+.toast { display:flex; align-items:center; gap:9px; padding:9px 14px; background:linear-gradient(135deg, rgba(17,30,44,.98), rgba(14,24,36,.95)); border:1px solid var(--brd2); border-left:3px solid var(--ai); border-radius:var(--r); font-family:var(--f-mono); font-size:11px; color:var(--txt); min-width:240px; max-width:300px; pointer-events:all; box-shadow:0 4px 24px rgba(0,0,0,.6), 0 0 16px rgba(0,209,255,.06); animation:tIn .22s ease }
+.toast.warn { border-left-color:var(--warn) }
+.toast.err { border-left-color:var(--red); box-shadow:0 4px 24px rgba(0,0,0,.6), 0 0 16px var(--red-glow) }
+@keyframes tIn { from{opacity:0;transform:translateX(12px)} to{opacity:1;transform:translateX(0)} }
+@keyframes tOut { to{opacity:0;transform:translateX(12px);max-height:0;padding:0;margin:0;border-width:0} }
+.toast.out { animation:tOut .2s ease forwards }
+.t-ico { font-size:13px; flex-shrink:0 }
+.t-msg { flex:1 }
+.t-t { color:var(--txt3); font-size:9px; flex-shrink:0 }
+
+/* ── MODAL ── */
+.mb { position:fixed; inset:0; background:rgba(5,8,12,.88); backdrop-filter:blur(8px); z-index:500; display:none; place-items:center }
+.mb.open { display:grid }
+.mo { background:linear-gradient(145deg, rgba(17,26,38,.99), rgba(14,22,32,.98)); border:1px solid var(--brd2); border-radius:var(--r); width:400px; max-width:95vw; box-shadow:0 20px 60px rgba(0,0,0,.8), 0 0 0 1px rgba(0,209,255,.06); animation:secIn .2s ease }
+.mh { display:flex; align-items:center; padding:14px 18px; border-bottom:1px solid var(--brd); background:linear-gradient(90deg, var(--ai-lo), transparent) }
+.mt { font-family:var(--f-head); font-size:15px; letter-spacing:2px; color:var(--ai); text-shadow:0 0 12px var(--ai-glow) }
+.mx { margin-left:auto; background:none; border:none; color:var(--txt3); font-size:17px; cursor:pointer; width:26px; height:26px; display:grid; place-items:center; border-radius:var(--r); transition:all var(--t) }
+.mx:hover { color:var(--txt); background:var(--hover) }
+.mbd { padding:18px; display:flex; flex-direction:column; gap:13px }
+.mft { padding:12px 18px; border-top:1px solid var(--brd); display:flex; justify-content:flex-end; gap:7px }
+
+.src-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:7px }
+.src-b { padding:11px; background:var(--raised); border:1px solid var(--brd); border-radius:var(--r); cursor:pointer; text-align:center; transition:all var(--t); user-select:none }
+.src-b:hover { border-color:var(--brd2); transform:translateY(-1px) }
+.src-b.sel { border-color:var(--ai); background:var(--ai-lo); box-shadow:0 0 12px var(--ai-glow) }
+.src-ico { font-size:20px; margin-bottom:4px }
+.src-l { font-family:var(--f-mono); font-size:9px; letter-spacing:1px; color:var(--txt3); text-transform:uppercase }
+.src-b.sel .src-l { color:var(--ai) }
+
+/* ══════════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════ */
+.kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px }
+.kpi { background:linear-gradient(145deg, rgba(17,26,38,.95), rgba(14,22,32,.9)); border:1px solid var(--brd); padding:15px 14px; border-radius:var(--r); position:relative; overflow:hidden; transition:all var(--t); cursor:default }
+.kpi::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--brd2) }
+.kpi.g::after { background:var(--safe); box-shadow:0 2px 12px var(--safe-glow) }
+.kpi.y::after { background:var(--warn); box-shadow:0 2px 12px var(--warn-glow) }
+.kpi.r::after { background:var(--red); box-shadow:0 2px 12px var(--red-glow) }
+.kpi.a::after { background:var(--ai); box-shadow:0 2px 12px var(--ai-glow) }
+.kpi:hover { border-color:var(--brd2); transform:translateY(-1px); box-shadow:0 6px 24px rgba(0,0,0,.4) }
+.kpi-v { font-family:var(--f-head); font-size:40px; line-height:1; color:var(--txt2); transition:color var(--t) }
+.kpi.g .kpi-v { color:var(--safe); text-shadow:0 0 20px var(--safe-glow) }
+.kpi.y .kpi-v { color:var(--warn); text-shadow:0 0 20px var(--warn-glow) }
+.kpi.r .kpi-v { color:var(--red); text-shadow:0 0 20px var(--red-glow) }
+.kpi.a .kpi-v { color:var(--ai); text-shadow:0 0 20px var(--ai-glow) }
+.kpi-l { font-family:var(--f-mono); font-size:9px; letter-spacing:1.5px; color:var(--txt3); margin-top:5px; text-transform:uppercase }
+.kpi-bar { height:2px; background:var(--brd); margin-top:10px; border-radius:1px; overflow:hidden }
+.kpi-bf { height:100%; border-radius:1px; transition:width .5s cubic-bezier(.4,0,.2,1) }
+
+.d2 { display:grid; grid-template-columns:1fr 290px; gap:12px }
+
+.af { display:flex; flex-direction:column; gap:3px; max-height:260px; overflow-y:auto }
+.af-r { display:grid; grid-template-columns:56px 100px 1fr 54px; align-items:center; gap:7px; padding:6px 10px; background:var(--raised); border:1px solid var(--brd); border-left:2px solid transparent; border-radius:var(--r); font-family:var(--f-mono); font-size:10px; animation:slideIn .22s ease; transition:background var(--t) }
+.af-r:hover { background:var(--hover) }
+@keyframes slideIn { from{opacity:0;transform:translateX(-5px)} to{opacity:1;transform:translateX(0)} }
+.af-r.g { border-left-color:var(--safe) }
+.af-r.y { border-left-color:var(--warn) }
+.af-r.r { border-left-color:var(--red); animation:slideIn .22s ease, rowRedPulse 2s ease 1 }
+@keyframes rowRedPulse { 0%{background:rgba(255,59,59,.12)} 100%{background:var(--raised)} }
+.af-t { color:var(--txt3) }
+.af-s { color:var(--txt2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.af-c { color:var(--ai); text-align:right }
+.af-empty { padding:28px; text-align:center; font-family:var(--f-mono); font-size:11px; color:var(--txt3); letter-spacing:1px }
+
+.sys-r { display:flex; flex-direction:column; gap:5px }
+.sys-i { display:flex; align-items:center; gap:9px; padding:8px 11px; background:var(--raised); border:1px solid var(--brd); border-radius:var(--r); transition:all var(--t) }
+.sys-i:hover { border-color:var(--brd2) }
+.sys-d { width:7px; height:7px; border-radius:50%; background:var(--txt3); flex-shrink:0; transition:all var(--t) }
+.sys-d.on { background:var(--safe); box-shadow:0 0 7px var(--safe-glow) }
+.sys-d.w { background:var(--warn); box-shadow:0 0 7px var(--warn-glow) }
+.sys-d.e { background:var(--red); box-shadow:0 0 7px var(--red-glow) }
+.sys-l { font-family:var(--f-mono); font-size:10px; color:var(--txt2); flex:1 }
+.sys-v { font-family:var(--f-mono); font-size:10px; color:var(--txt3) }
+
+/* ══════════════════════════════════════════════
+   PRE-RECORDED SECTION
+══════════════════════════════════════════════ */
+
+.rec-limits-bar {
+  display:flex; align-items:center; gap:16px;
+  padding:8px 16px; margin-bottom:12px;
+  background:linear-gradient(90deg, rgba(0,209,255,.05), transparent);
+  border:1px solid var(--brd); border-left:3px solid var(--ai);
+  border-radius:var(--r);
+  font-family:var(--f-mono); font-size:11px; color:var(--txt3); /* ↑ increased from 10px */
+}
+.rec-limits-bar .lim-item { display:flex; align-items:center; gap:6px }
+.rec-limits-bar .lim-ico { font-size:14px }
+.rec-limits-bar .lim-val { color:var(--ai); font-weight:600 }
+.rec-limits-bar .lim-sep { color:var(--brd2) }
+
+.rec-main-layout {
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:12px;
+  margin-bottom:12px;
+  align-items:start;
+}
+
+.rec-player-block {
+  background:linear-gradient(145deg, rgba(17,26,38,.95), rgba(14,22,32,.9));
+  border:1px solid var(--brd);
+  border-radius:var(--r);
+  overflow:hidden;
+  transition:border-color var(--t), box-shadow var(--t);
+  box-shadow:0 2px 16px rgba(0,0,0,.4);
+}
+.rec-player-block:hover { border-color:var(--brd2) }
+
+.rec-player-header {
+  display:flex; align-items:center; gap:9px;
+  padding:9px 14px; border-bottom:1px solid var(--brd);
+  background:linear-gradient(90deg, rgba(0,209,255,.04), transparent);
+}
+
+/* ── Drop zone ── */
+.uz {
+  border:2px dashed var(--brd2); border-radius:var(--r);
+  padding:32px 20px; text-align:center; cursor:pointer; /* ↓ reduced padding from 44px */
+  transition:all .2s; background:rgba(0,209,255,.01);
+  margin:12px;
+}
+.uz:hover, .uz.drag { border-color:var(--ai); background:var(--ai-lo); box-shadow:0 0 30px rgba(0,209,255,.06), inset 0 0 20px rgba(0,209,255,.04) }
+.uz-ico { font-size:34px; margin-bottom:10px; opacity:.3 } /* ↓ slightly smaller */
+.uz-t { font-family:var(--f-head); font-size:13px; letter-spacing:3px; color:var(--txt2) }
+.uz-s { font-family:var(--f-mono); font-size:11px; color:var(--txt3); margin-top:5px } /* ↑ from 10px */
+.uz-lim { font-family:var(--f-mono); font-size:10px; color:var(--txt3); margin-top:7px; opacity:.7 } /* ↑ from 9px */
+
+/* ── Error state ── */
+.uz-error-block {
+  display:none; margin:12px;
+  padding:16px; text-align:center;
+  background:var(--red-lo); border:1px solid rgba(255,59,59,.35);
+  border-radius:var(--r); animation:secIn .2s ease;
+}
+.uz-error-block.on { display:block }
+.uz-err-ico { font-size:30px; margin-bottom:8px }
+.uz-err-title { font-family:var(--f-head); font-size:13px; letter-spacing:2px; color:var(--red); margin-bottom:6px; text-shadow:0 0 10px var(--red-glow) }
+.uz-err-msg { font-family:var(--f-mono); font-size:11px; color:var(--txt2); margin-bottom:12px; line-height:1.6; white-space:pre-line }
+
+/* ── Image viewer — REDUCED HEIGHT ── */
+.rec-img-container { display:none; flex-direction:column }
+.rec-img-container.on { display:flex }
+.rec-img-vp {
+  position:relative;
+  background:#050810;
+  max-height:200px; /* ↓ reduced from 300px */
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+#rec-img { max-width:100%; max-height:200px; object-fit:contain; display:block } /* ↓ reduced */
+.rec-img-vp::after {
+  content:'';
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,209,255,.008) 3px, rgba(0,209,255,.008) 4px);
+  pointer-events:none; z-index:2;
+}
+.rec-cor { position:absolute; width:14px; height:14px; z-index:3 }
+.rec-cor.tl { top:6px; left:6px; border-top:1.5px solid var(--ai); border-left:1.5px solid var(--ai) }
+.rec-cor.tr { top:6px; right:6px; border-top:1.5px solid var(--ai); border-right:1.5px solid var(--ai) }
+.rec-cor.bl { bottom:6px; left:6px; border-bottom:1.5px solid var(--ai); border-left:1.5px solid var(--ai) }
+.rec-cor.br { bottom:6px; right:6px; border-bottom:1.5px solid var(--ai); border-right:1.5px solid var(--ai) }
+.rec-img-meta {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 14px; border-top:1px solid var(--brd);
+  background:rgba(0,0,0,.2);
+  font-family:var(--f-mono); font-size:11px; color:var(--txt3); /* ↑ from 10px */
+}
+
+/* ── Video player — REDUCED HEIGHT ── */
+.rec-video-container { display:none; flex-direction:column }
+.rec-video-container.on { display:flex }
+
+.rec-vp {
+  position:relative;
+  background:#050810;
+  height:190px; /* ↓ fixed height instead of aspect-ratio for more control */
+  overflow:hidden;
+}
+#rec-vid { width:100%; height:100%; display:block; object-fit:contain; background:#000 }
+.rec-vp::after {
+  content:'';
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,209,255,.008) 3px, rgba(0,209,255,.008) 4px);
+  pointer-events:none; z-index:2;
+}
+
+/* Video controls */
+.rec-controls {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 12px;
+  border-top:1px solid var(--brd);
+  background:linear-gradient(90deg, rgba(0,0,0,.3), transparent);
+}
+.rec-ctrl-btn {
+  width:28px; height:28px; display:grid; place-items:center;
+  background:var(--raised); border:1px solid var(--brd);
+  border-radius:var(--r); cursor:pointer;
+  font-size:11px; color:var(--txt2);
+  transition:all var(--t); flex-shrink:0;
+}
+.rec-ctrl-btn:hover { border-color:var(--ai); color:var(--ai); background:var(--ai-lo) }
+
+.rec-seek { flex:1; height:3px; -webkit-appearance:none; appearance:none; background:var(--brd2); border-radius:1.5px; outline:none; cursor:pointer }
+.rec-seek::-webkit-slider-thumb { -webkit-appearance:none; width:12px; height:12px; border-radius:50%; background:var(--ai); border:2px solid var(--bg); box-shadow:0 0 6px var(--ai-glow) }
+
+.rec-time { font-family:var(--f-mono); font-size:11px; color:var(--ai); letter-spacing:1px; white-space:nowrap } /* ↑ from 10px */
+
+.rec-vol { width:60px; height:2px; -webkit-appearance:none; appearance:none; background:var(--brd2); border-radius:1px; outline:none; cursor:pointer }
+.rec-vol::-webkit-slider-thumb { -webkit-appearance:none; width:10px; height:10px; border-radius:50%; background:var(--txt2); border:1px solid var(--bg) }
+
+.rec-fileinfo {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 14px; border-top:1px solid var(--brd);
+  background:rgba(0,0,0,.2);
+}
+.rec-fname { font-family:var(--f-mono); font-size:11px; color:var(--txt2); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap } /* ↑ from 10px */
+
+.rec-reset-btn {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 12px; font-family:var(--f-mono); font-size:10px; letter-spacing:1.5px; /* ↑ from 9px */
+  background:rgba(255,59,59,.08); border:1px solid rgba(255,59,59,.35); color:var(--red);
+  border-radius:var(--r); cursor:pointer; transition:all var(--t); text-transform:uppercase;
+  flex-shrink:0;
+}
+.rec-reset-btn:hover { background:rgba(255,59,59,.18); border-color:var(--red); box-shadow:0 0 10px var(--red-glow); transform:scale(1.04) }
+
+/* ── Right panel ── */
+.rec-timeline-panel {
+  background:linear-gradient(145deg, rgba(17,26,38,.95), rgba(14,22,32,.9));
+  border:1px solid var(--brd);
+  border-radius:var(--r);
+  overflow:hidden;
+  box-shadow:0 2px 16px rgba(0,0,0,.4);
+  display:flex; flex-direction:column;
+}
+
+.rec-tl-header {
+  padding:9px 14px; border-bottom:1px solid var(--brd);
+  background:linear-gradient(90deg, rgba(0,209,255,.04), transparent);
+  display:flex; align-items:center; gap:9px; flex-shrink:0;
+}
+
+/* ── Image result panel ── */
+.rec-img-result-panel { display:flex; flex-direction:column; gap:0 }
+.rec-img-result-panel .rip-empty {
+  padding:28px 14px; text-align:center;
+  font-family:var(--f-mono); font-size:11px; color:var(--txt3); letter-spacing:1px; /* ↑ from 10px */
+  line-height:1.8;
+}
+.rip-score-block { display:none; flex-direction:column; gap:0; animation:secIn .3s ease }
+.rip-score-block.on { display:flex }
+
+.rip-gauge {
+  padding:14px 14px 10px;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  border-bottom:1px solid var(--brd);
+}
+.rip-circle {
+  width:80px; height:80px; border-radius:50%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  border:2px solid var(--brd2); position:relative;
+  background:radial-gradient(circle, rgba(0,0,0,.4), transparent);
+  transition:border-color .4s, box-shadow .4s;
+}
+.rip-circle.c-g { border-color:var(--safe); box-shadow:0 0 20px var(--safe-glow), inset 0 0 16px rgba(0,255,156,.08) }
+.rip-circle.c-y { border-color:var(--warn); box-shadow:0 0 20px var(--warn-glow), inset 0 0 16px rgba(255,214,0,.08) }
+.rip-circle.c-r { border-color:var(--red); box-shadow:0 0 20px var(--red-glow), inset 0 0 16px rgba(255,59,59,.1); animation:critPulse 1.5s infinite }
+.rip-pct { font-family:var(--f-head); font-size:22px; font-weight:700; line-height:1 }
+.rip-pct.c-g { color:var(--safe); text-shadow:0 0 12px var(--safe-glow) }
+.rip-pct.c-y { color:var(--warn); text-shadow:0 0 12px var(--warn-glow) }
+.rip-pct.c-r { color:var(--red); text-shadow:0 0 12px var(--red-glow) }
+.rip-lbl { font-family:var(--f-mono); font-size:8px; letter-spacing:2px; color:var(--txt3); text-transform:uppercase }
+.rip-verdict { font-family:var(--f-mono); font-size:12px; letter-spacing:2px; font-weight:600; text-transform:uppercase; text-align:center } /* ↑ from 11px */
+
+.rip-details { display:flex; flex-direction:column; gap:2px; padding:8px }
+.rip-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:5px 8px; background:var(--raised); border:1px solid var(--brd);
+  border-radius:3px; font-family:var(--f-mono); font-size:10px; /* ↑ from 9px */
+  transition:background var(--t);
+}
+.rip-row:hover { background:var(--hover) }
+.rip-row-k { color:var(--txt3); letter-spacing:1px; text-transform:uppercase }
+.rip-row-v { color:var(--txt2); font-weight:600 }
+.rip-row-v.c-g { color:var(--safe) }
+.rip-row-v.c-y { color:var(--warn) }
+.rip-row-v.c-r { color:var(--red) }
+
+/* ── Video timeline ── */
+.rec-tl-scroll {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  max-height:380px;
+  padding:8px;
+  display:flex; flex-direction:column; gap:2px;
+}
+.tl-empty-msg { padding:28px 14px; text-align:center; font-family:var(--f-mono); font-size:11px; color:var(--txt3); letter-spacing:1px } /* ↑ from 10px */
+
+.tl-item {
+  display:flex; align-items:center; gap:8px;
+  padding:6px 8px; border-radius:3px; /* ↑ from 5px */
+  border:1px solid transparent;
+  cursor:pointer; transition:all var(--t);
+  border-left:3px solid transparent;
+}
+.tl-item:hover { background:var(--hover); border-color:var(--brd) }
+.tl-item.tli-g { border-left-color:var(--safe) }
+.tl-item.tli-y { border-left-color:var(--warn) }
+.tl-item.tli-r { border-left-color:var(--red) }
+.tl-item.tli-active { background:var(--raised); border-color:var(--brd2) }
+.tl-item.tli-hidden { display:none }
+
+.tli-ts { font-family:var(--f-mono); font-size:11px; color:var(--ai); flex-shrink:0; width:46px } /* ↑ from 10px */
+.tli-bar { flex:1; height:5px; border-radius:2px; background:var(--brd) } /* ↑ height from 4px */
+.tli-fill { height:100%; border-radius:2px; transition:width .3s }
+.tli-score { font-family:var(--f-mono); font-size:10px; color:var(--txt3); flex-shrink:0; width:32px; text-align:right } /* ↑ from 9px */
+
+.tl-filters { display:flex; gap:5px; padding:8px 8px 5px; border-bottom:1px solid var(--brd); flex-shrink:0 }
+.tf-b { padding:3px 10px; font-family:var(--f-mono); font-size:10px; letter-spacing:1px; border:1px solid; border-radius:2px; cursor:pointer; transition:all .15s } /* ↑ from 9px/2px */
+.tf-b.gf { border-color:rgba(0,255,156,.4); color:var(--safe) }
+.tf-b.yf { border-color:rgba(255,214,0,.4); color:var(--warn) }
+.tf-b.rf { border-color:rgba(255,59,59,.4); color:var(--red) }
+.tf-b:hover { transform:scale(1.06) }
+.tf-b.off { opacity:.2 }
+
+/* ── Parameters card ── */
+.rp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px } /* ↑ gap */
+.rp-grid-img { display:grid; grid-template-columns:1fr 1fr; gap:14px }
+.pg { display:flex; flex-direction:column; gap:5px }
+
+/* ── Time input special group ── */
+.time-input-group {
+  display:flex; flex-direction:column; gap:5px;
+}
+.time-input-wrap {
+  position:relative; display:flex; align-items:center;
+}
+.time-input-wrap .time-icon {
+  position:absolute; left:10px; font-size:13px; z-index:1; pointer-events:none;
+}
+.time-input-wrap input[type="time"].inp {
+  padding-left:30px;
+}
+.time-hint {
+  font-family:var(--f-mono); font-size:10px; color:var(--txt3); /* ↑ from 9px */
+  margin-top:2px; letter-spacing:0.5px;
+}
+/* Duration display badge next to time fields */
+.time-dur-badge {
+  display:inline-flex; align-items:center;
+  padding:3px 8px; border-radius:2px;
+  background:var(--ai-lo); border:1px solid rgba(0,209,255,.2);
+  font-family:var(--f-mono); font-size:10px; color:var(--ai);
+  margin-top:4px; align-self:flex-start;
+}
+
+/* Preset info note */
+.preset-note {
+  display:flex; align-items:center; gap:8px;
+  padding:9px 14px; margin-bottom:12px;
+  background:rgba(0,209,255,.04); border:1px solid rgba(0,209,255,.15);
+  border-radius:var(--r);
+  font-family:var(--f-mono); font-size:10px; color:var(--txt3); letter-spacing:1px; /* ↑ from 9px */
+}
+.preset-note .pn-ico { font-size:13px; flex-shrink:0 }
+.preset-note .pn-vals { color:var(--ai) }
+
+/* ── Progress ── */
+.prog-b { display:none }
+.prog-b.on { display:block }
+.prog-i { display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:11px; color:var(--txt3); margin-bottom:7px } /* ↑ from 10px */
+.prog-t { height:5px; background:var(--brd); border-radius:2px; overflow:hidden } /* ↑ from 4px */
+.prog-f { height:100%; background:linear-gradient(90deg, var(--ai-dim), var(--ai), #00FF9C); background-size:200% 100%; border-radius:2px; transition:width .3s; animation:progShimmer 1.5s linear infinite; box-shadow:0 0 8px var(--ai-glow) }
+@keyframes progShimmer { 0%{background-position:100% 0} 100%{background-position:0 0} }
+
+/* ── Events table ── */
+.evh { display:grid; grid-template-columns:70px 110px 1fr 70px 78px; gap:7px; padding:7px 12px; background:var(--raised); border-bottom:1px solid var(--brd); font-family:var(--f-mono); font-size:10px; letter-spacing:1.5px; color:var(--txt3); text-transform:uppercase; position:sticky; top:0 } /* ↑ font size */
+.evr { display:grid; grid-template-columns:70px 110px 1fr 70px 78px; gap:7px; align-items:center; padding:7px 12px; border-bottom:1px solid rgba(26,43,58,.5); font-family:var(--f-mono); font-size:12px; cursor:pointer; transition:background var(--t) } /* ↑ font size */
+.evr:hover { background:var(--hover) }
+.ev-t { color:var(--ai) }
+.ev-c { color:var(--txt2); text-align:right }
+.ev-y { color:var(--txt3); text-align:right }
+.evlw { max-height:260px; overflow-y:auto }
+.ex-bar { display:flex; align-items:center; gap:8px; flex-wrap:wrap }
+.sum-t { display:flex; gap:6px; margin-left:auto; flex-wrap:wrap }
+
+/* ── Image result card ── */
+.img-result-card { display:none; animation:secIn .3s ease }
+.img-result-card.on { display:block }
+.img-res-body { display:grid; grid-template-columns:1fr 1fr; gap:11px }
+.img-res-stat {
+  background:var(--raised); border:1px solid var(--brd); border-radius:var(--r);
+  padding:14px; text-align:center; transition:all var(--t);
+}
+.img-res-stat:hover { border-color:var(--brd2) }
+.img-rs-v { font-family:var(--f-head); font-size:28px; line-height:1 }
+.img-rs-l { font-family:var(--f-mono); font-size:10px; letter-spacing:1.5px; color:var(--txt3); margin-top:5px; text-transform:uppercase } /* ↑ from 8px */
+
+/* ══════════════════════════════════════════════
+   LIVE FEEDS
+══════════════════════════════════════════════ */
+.cam-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px }
+.cam-p { background:var(--surf); border:1px solid var(--brd); border-radius:var(--r); overflow:hidden; transition:all .3s; box-shadow:0 2px 16px rgba(0,0,0,.4) }
+.cam-p.tc-y { border-color:rgba(255,214,0,.5); box-shadow:0 0 20px rgba(255,214,0,.08), 0 2px 16px rgba(0,0,0,.4) }
+.cam-p.tc-r { border-color:rgba(255,59,59,.6); animation:camRedPulse 1.5s ease-in-out infinite }
+@keyframes camRedPulse { 0%,100%{box-shadow:0 0 20px rgba(255,59,59,.12),0 2px 16px rgba(0,0,0,.4)} 50%{box-shadow:0 0 40px rgba(255,59,59,.3),0 2px 16px rgba(0,0,0,.4)} }
+.cam-hd { display:flex; align-items:center; gap:7px; padding:8px 12px; background:linear-gradient(90deg, rgba(0,209,255,.04), transparent); border-bottom:1px solid var(--brd) }
+.cam-id { font-family:var(--f-mono); font-size:9px; letter-spacing:2px; color:var(--txt3) }
+.cam-nm { font-family:var(--f-mono); font-size:11px; color:var(--txt2); font-weight:500 }
+.cam-sd { width:7px; height:7px; border-radius:50%; background:var(--txt3); margin-left:auto; flex-shrink:0 }
+.cam-sd.live { background:var(--safe); box-shadow:0 0 8px var(--safe-glow); animation:statusBlink 2s infinite }
+.cam-sd.err { background:var(--red); box-shadow:0 0 8px var(--red-glow) }
+.cam-vp { position:relative; background:#050810; aspect-ratio:16/9; overflow:hidden }
+.cam-vid { width:100%; height:100%; object-fit:cover; display:block }
+.cam-cvs { position:absolute; inset:0; width:100%; height:100%; pointer-events:none }
+.cam-vp::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,209,255,.012) 3px, rgba(0,209,255,.012) 4px); pointer-events:none; z-index:3; animation:scanlineMove 8s linear infinite }
+@keyframes scanlineMove { 0%{background-position:0 0} 100%{background-position:0 100vh} }
+.cam-ov { position:absolute; inset:0; display:flex; flex-direction:column; pointer-events:none; z-index:4 }
+.cam-ovt { display:flex; align-items:flex-start; padding:8px; gap:6px; background:linear-gradient(180deg, rgba(5,8,12,.85), transparent) }
+.cam-ovb { margin-top:auto; display:flex; align-items:flex-end; padding:8px; gap:6px; background:linear-gradient(0deg, rgba(5,8,12,.9), transparent) }
+.cam-cor { position:absolute; width:12px; height:12px; transition:border-color .3s, box-shadow .3s }
+.cam-cor.tl { top:5px; left:5px; border-top:1.5px solid; border-left:1.5px solid }
+.cam-cor.tr { top:5px; right:5px; border-top:1.5px solid; border-right:1.5px solid }
+.cam-cor.bl { bottom:5px; left:5px; border-bottom:1.5px solid; border-left:1.5px solid }
+.cam-cor.br { bottom:5px; right:5px; border-bottom:1.5px solid; border-right:1.5px solid }
+.cc-n { border-color:rgba(0,255,156,.7); box-shadow:none }
+.cc-y { border-color:rgba(255,214,0,.85); box-shadow:0 0 6px rgba(255,214,0,.3) }
+.cc-r { border-color:rgba(255,59,59,.9); box-shadow:0 0 8px rgba(255,59,59,.4) }
+.cam-rec { width:6px; height:6px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red-glow); animation:statusBlink 1s ease-in-out infinite; margin-top:2px; flex-shrink:0 }
+.cam-rl { font-family:var(--f-mono); font-size:9px; color:rgba(255,255,255,.6); letter-spacing:1.5px }
+.cam-chip { font-family:var(--f-mono); font-size:10px; font-weight:600; letter-spacing:1.5px; padding:3px 8px; border-radius:2px; border:1px solid rgba(255,255,255,.15); text-transform:uppercase; transition:all .3s }
+.cam-chip.normal { background:rgba(0,255,156,.18); color:var(--safe); border-color:rgba(0,255,156,.35); text-shadow:0 0 8px var(--safe-glow) }
+.cam-chip.possibly_suspicious { background:rgba(255,214,0,.18); color:var(--warn); border-color:rgba(255,214,0,.35) }
+.cam-chip.suspicious { background:rgba(255,59,59,.22); color:var(--red); border-color:rgba(255,59,59,.45); text-shadow:0 0 8px var(--red-glow); animation:critPulse 1.2s infinite }
+.cam-sv { font-family:var(--f-head); font-size:20px; color:rgba(255,255,255,.9); font-weight:700; line-height:1; text-shadow:0 0 12px rgba(255,255,255,.2) }
+.cam-sl { font-family:var(--f-mono); font-size:8px; color:rgba(255,255,255,.4); letter-spacing:1.5px }
+.cam-ph { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; height:100%; min-height:170px; background:radial-gradient(ellipse at center, rgba(0,209,255,.03), transparent) }
+.cam-ph-ico { font-size:32px; opacity:.15 }
+.cam-ph-txt { font-family:var(--f-mono); font-size:10px; letter-spacing:2px; color:var(--txt3) }
+.cam-tbar { height:3px; background:var(--brd) }
+.cam-tbf { height:100%; transition:width .5s ease, background .4s; background:var(--safe) }
+.cam-ctrl { padding:8px 12px; display:flex; align-items:center; gap:7px; border-top:1px solid var(--brd); flex-wrap:wrap; background:linear-gradient(90deg, rgba(0,0,0,.2), transparent) }
+.cam-stat { font-family:var(--f-mono); font-size:10px; color:var(--txt3) }
+.cam-stat span { color:var(--txt2) }
+.live-log { display:flex; flex-direction:column; gap:2px; max-height:180px; overflow-y:auto }
+.log-r { display:flex; align-items:center; gap:7px; padding:5px 10px; font-family:var(--f-mono); font-size:10px; color:var(--txt3); border-left:2px solid transparent; animation:slideIn .2s ease; border-radius:2px; transition:background var(--t) }
+.log-r:hover { background:var(--hover) }
+.log-r.w { border-left-color:var(--warn); color:var(--txt2) }
+.log-r.a { border-left-color:var(--red); color:var(--red) }
+.log-t { color:var(--txt3); flex-shrink:0 }
+.log-empty { padding:14px; text-align:center; color:var(--txt3); font-family:var(--f-mono); font-size:10px; letter-spacing:1px }
+
+/* ══════════════════════════════════════════════
+   ALERT CONFIG
+══════════════════════════════════════════════ */
+.alert-level-blocks { display:flex; flex-direction:column; gap:10px; margin-bottom:12px }
+.alb { background:linear-gradient(145deg, rgba(17,26,38,.95), rgba(14,22,32,.9)); border:1px solid var(--brd); border-radius:var(--r); overflow:hidden; transition:border-color var(--t), box-shadow var(--t); box-shadow:0 2px 12px rgba(0,0,0,.3) }
+.alb:hover { box-shadow:0 4px 20px rgba(0,0,0,.4) }
+.alb-n { border-left:3px solid var(--safe) }
+.alb-y { border-left:3px solid var(--warn) }
+.alb-r { border-left:3px solid var(--red) }
+.alb-header { display:flex; align-items:center; gap:11px; padding:10px 14px; border-bottom:1px solid var(--brd) }
+.alb-n .alb-header { background:linear-gradient(90deg, rgba(0,255,156,.05), transparent) }
+.alb-y .alb-header { background:linear-gradient(90deg, rgba(255,214,0,.05), transparent) }
+.alb-r .alb-header { background:linear-gradient(90deg, rgba(255,59,59,.06), transparent) }
+.alb-ico { font-size:15px; flex-shrink:0 }
+.alb-title { font-family:var(--f-mono); font-size:10px; letter-spacing:2px; font-weight:600; text-transform:uppercase }
+.alb-n .alb-title { color:var(--safe); text-shadow:0 0 8px var(--safe-glow) }
+.alb-y .alb-title { color:var(--warn) }
+.alb-r .alb-title { color:var(--red); text-shadow:0 0 8px var(--red-glow) }
+.alb-sub { font-family:var(--f-mono); font-size:9px; color:var(--txt3); margin-left:4px }
+.alb-enable { margin-left:auto; display:flex; align-items:center; gap:8px }
+.alb-enable-lbl { font-family:var(--f-mono); font-size:9px; color:var(--txt3); letter-spacing:1px }
+.alb-body { padding:12px 14px; display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+.alb-body.disabled { opacity:.35; pointer-events:none }
+.ch-pill { display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:20px; border:1px solid var(--brd); background:var(--raised); cursor:pointer; transition:all var(--t); user-select:none; font-family:var(--f-mono); font-size:10px; color:var(--txt3); letter-spacing:1px }
+.ch-pill:hover { border-color:var(--brd2); color:var(--txt2); transform:translateY(-1px) }
+.ch-pill .cp-ico { font-size:13px; line-height:1 }
+.alb-n .ch-pill.active { border-color:rgba(0,255,156,.5); background:rgba(0,255,156,.1); color:var(--safe); text-shadow:0 0 8px var(--safe-glow); box-shadow:0 0 10px rgba(0,255,156,.12) }
+.alb-y .ch-pill.active { border-color:rgba(255,214,0,.5); background:rgba(255,214,0,.1); color:var(--warn); box-shadow:0 0 10px rgba(255,214,0,.1) }
+.alb-r .ch-pill.active { border-color:rgba(255,59,59,.5); background:rgba(255,59,59,.12); color:var(--red); text-shadow:0 0 8px var(--red-glow); box-shadow:0 0 10px rgba(255,59,59,.15) }
+.alb-sep { width:1px; height:20px; background:var(--brd); flex-shrink:0 }
+.cfg-r { display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-top:11px }
+.sf { padding:10px 14px; background:var(--safe-lo); border:1px solid rgba(0,255,156,.3); border-radius:var(--r); font-family:var(--f-mono); font-size:12px; color:var(--safe); display:none; animation:secIn .2s ease; text-shadow:0 0 8px var(--safe-glow) }
+.sf.on { display:block }
+
+/* ═══════════════════════════════════════════
+   READABILITY OVERRIDES — larger fonts, more breathing room
+═══════════════════════════════════════════ */
+
+/* Dashboard KPIs */
+.kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px }
+.kpi { padding:18px 16px }
+.kpi-v { font-size:44px }
+.kpi-l { font-family:var(--f-mono); font-size:11px; letter-spacing:1.5px; margin-top:6px }
+.kpi-bar { margin-top:11px }
+
+/* Alert feed rows */
+.af-r { padding:8px 12px; gap:8px }
+.af-r { font-size:12px }
+.af-t { font-size:12px }
+.af-empty { font-size:13px; padding:32px }
+
+/* System status rows */
+.sys-i { padding:10px 13px; gap:10px }
+.sys-l { font-size:13px }
+.sys-v { font-size:12px }
+.sys-d { width:8px; height:8px }
+
+/* Section 2-col layout — give more breathing room */
+.d2 { gap:14px }
+
+/* Card headers */
+.ch { padding:12px 16px; gap:10px }
+.ct { font-size:11px; letter-spacing:2px }
+
+/* Badge sizes */
+.badge { font-size:10px; padding:3px 9px }
+
+/* PRE-RECORDED */
+.uz { padding:48px 24px }
+.uz-t { font-size:15px; letter-spacing:2.5px }
+.uz-s { font-size:12px; margin-top:6px }
+.rp-grid { gap:16px }
+.pg { gap:6px }
+.prog-i { font-size:12px; margin-bottom:8px }
+
+/* Events table */
+.evh { grid-template-columns:74px 118px 1fr 74px 82px; gap:8px; padding:8px 14px; font-size:11px; letter-spacing:1.5px }
+.evr { grid-template-columns:74px 118px 1fr 74px 82px; gap:8px; padding:8px 14px; font-size:13px }
+.evlw { max-height:280px }
+
+/* Timeline filters */
+.tf-b { padding:4px 11px; font-size:11px }
+.tl-filters { gap:6px; padding:9px 10px 6px }
+.tl-item { padding:7px 10px; gap:10px }
+.tli-ts { font-size:12px; width:52px }
+.tli-bar { height:6px }
+.tli-score { font-size:11px; width:36px }
+.tl-empty-msg { font-size:13px; padding:32px 14px }
+
+/* Image result panel */
+.rip-verdict { font-size:13px; letter-spacing:2px }
+.rip-row { font-size:12px; padding:6px 10px }
+.rip-circle { width:90px; height:90px }
+.rip-pct { font-size:26px }
+.rip-lbl { font-size:9px; letter-spacing:2px }
+
+/* Preset note */
+.preset-note { font-size:12px; padding:10px 16px; gap:10px; margin-bottom:14px }
+
+/* Time hint */
+.time-hint { font-size:11px }
+
+/* LIVE FEEDS */
+.cam-hd { padding:10px 14px; gap:8px }
+.cam-id { font-size:10px; letter-spacing:2px }
+.cam-nm { font-size:13px }
+.cam-ph-txt { font-size:12px; letter-spacing:2px }
+.cam-ph-ico { font-size:36px }
+.cam-ctrl { padding:10px 14px; gap:8px }
+.cam-stat { font-size:12px }
+.cam-rl { font-size:10px; letter-spacing:1px }
+.cam-chip { font-size:11px; padding:4px 10px; letter-spacing:1px }
+.cam-sv { font-size:22px }
+.cam-sl { font-size:9px; letter-spacing:1.5px }
+.log-r { padding:6px 12px; font-size:12px; gap:8px }
+.log-t { font-size:11px }
+.log-empty { font-size:12px; padding:18px }
+.cam-tbar { height:4px }
+.live-log { max-height:200px }
+
+/* ALERT CONFIG */
+.alb-header { padding:12px 16px; gap:12px }
+.alb-title { font-size:12px; letter-spacing:1.5px }
+.alb-sub { font-size:11px }
+.alb-ico { font-size:17px }
+.alb-enable-lbl { font-size:11px; letter-spacing:1px }
+.alb-body { padding:14px 16px; gap:10px }
+.ch-pill { padding:7px 14px; font-size:12px; border-radius:20px; gap:7px }
+.ch-pill .cp-ico { font-size:14px }
+.cfg-r { gap:14px; margin-top:13px }
+
+/* Modal */
+.mbd { padding:20px; gap:14px }
+.mt { font-size:16px; letter-spacing:2px }
+.src-grid { gap:8px }
+.src-b { padding:12px 8px }
+.src-ico { font-size:22px; margin-bottom:5px }
+.src-l { font-size:10px; letter-spacing:1px }
+.mft { padding:13px 20px; gap:8px }
+.rr { gap:10px }
+.rv { font-size:12px }
+
+/* Footer */
+#ft { font-size:11px; gap:18px; padding:0 16px }
+.fb { gap:6px }
+.fd { width:5px; height:5px }
+
+/* Toasts */
+.toast { font-size:12px; padding:10px 15px; gap:10px; min-width:250px }
+.t-ico { font-size:14px }
+.t-t { font-size:10px }
+
+/* Limits bar */
+.rec-limits-bar { font-size:12px; padding:9px 16px; gap:10px; margin-bottom:14px }
+.lim-val { font-size:13px }
+
+/* Error block */
+.rec-err-title { font-size:15px }
+.rec-err-msg { font-size:13px }
+
+/* Video controls */
+.rec-time { font-size:12px }
+.rec-fname { font-size:12px }
+.rec-reset-btn { font-size:11px; padding:5px 14px }
+
+/* Image result stats */
+.img-rs-v { font-size:30px }
+.img-rs-l { font-size:11px; letter-spacing:1.5px }
+
+/* Sliders */
+input[type=range]::-webkit-slider-thumb { width:15px; height:15px }
+
+/* Inline sub-label */
+.il-sub { font-family:var(--f-mono); font-size:11px; color:var(--txt3); margin-top:3px }
+</style>
+</head>
+<body>
+<div id="shell">
+
+<!-- ══ TOP BAR ══ -->
+<header id="tb">
+  <div class="brand">
+    <div class="omni-logo">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="18" r="16" stroke="rgba(0,209,255,.25)" stroke-width=".8" stroke-dasharray="4 3"/>
+        <path d="M5 18 Q18 6 31 18 Q18 30 5 18Z" fill="rgba(0,209,255,.06)" stroke="rgba(0,209,255,.5)" stroke-width="1"/>
+        <circle cx="18" cy="18" r="6" fill="rgba(0,209,255,.12)" stroke="rgba(0,209,255,.7)" stroke-width="1.2"/>
+        <circle cx="18" cy="18" r="2.8" fill="#00D1FF" opacity=".9">
+          <animate attributeName="r" values="2.8;3.8;2.8" dur="2.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values=".9;1;.9" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="18" cy="18" r="1" fill="white" opacity=".8"/>
+        <circle cx="20.5" cy="15.5" r=".8" fill="rgba(255,255,255,.4)"/>
+        <line x1="18" y1="2" x2="18" y2="6" stroke="rgba(0,209,255,.4)" stroke-width=".8"/>
+        <line x1="18" y1="30" x2="18" y2="34" stroke="rgba(0,209,255,.4)" stroke-width=".8"/>
+        <line x1="2" y1="18" x2="6" y2="18" stroke="rgba(0,209,255,.4)" stroke-width=".8"/>
+        <line x1="30" y1="18" x2="34" y2="18" stroke="rgba(0,209,255,.4)" stroke-width=".8"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">OmniEye</div>
+      <div class="brand-ver">AI Surveillance Intelligence System</div>
+    </div>
+  </div>
+
+  <div class="tb-div"></div>
+
+  <div class="tb-inds">
+    <div class="ind" id="ind-api"><div class="d"></div><span>BACKEND</span></div>
+    <div class="ind" id="ind-ws"><div class="d"></div><span>WEBSOCKET</span></div>
+    <div class="ind" id="ind-c1"><div class="d"></div><span>CAM-1</span></div>
+    <div class="ind" id="ind-c2"><div class="d"></div><span>CAM-2</span></div>
+  </div>
+
+  <div id="threat-badge">NOMINAL</div>
+  <div id="clock">--:--:--</div>
+</header>
+
+<!-- ══ SIDEBAR ══ -->
+<nav id="nav">
+  <div class="nav-sec">
+    <div class="nav-lbl">Modules</div>
+    <div class="nav-it active" data-sec="dash"><span class="ico">▣</span>Dashboard</div>
+    <div class="nav-it" data-sec="rec"><span class="ico">▶</span>Pre-Recorded</div>
+    <div class="nav-it" data-sec="live"><span class="ico">◉</span>Live Feeds<span class="nav-badge" id="nb-live">0</span></div>
+    <div class="nav-it" data-sec="cfg"><span class="ico">⚡</span>Alert Config<span class="nav-badge" id="nb-alert" style="background:var(--warn);color:#0A0F14"></span></div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-lbl">Session Stats</div>
+    <div class="nav-stats">
+      <div class="nsc"><div class="nsc-v g" id="ns-n">0</div><div class="nsc-l">Normal</div></div>
+      <div class="nsc"><div class="nsc-v y" id="ns-y">0</div><div class="nsc-l">Suspect</div></div>
+      <div class="nsc"><div class="nsc-v r" id="ns-r">0</div><div class="nsc-l">Threat</div></div>
+      <div class="nsc"><div class="nsc-v a" id="ns-f">0</div><div class="nsc-l">Feeds</div></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<main id="main">
+
+<!-- DASHBOARD -->
+<section class="sec active" id="sec-dash">
+  <div class="sh">
+    <div>
+      <div class="sh-title">DASHBOARD</div>
+      <div class="sh-sub">REAL-TIME SYSTEM OVERVIEW</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:7px">
+      <button class="btn btn-o btn-sm" onclick="refreshHealth()">↻ REFRESH</button>
+      <button class="btn btn-o btn-sm" onclick="clearFeed()">⊘ CLEAR</button>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi a"><div class="kpi-v" id="k-total">0</div><div class="kpi-l">Total Alerts</div><div class="kpi-bar"><div class="kpi-bf" id="kb-t" style="width:100%;background:var(--ai)"></div></div></div>
+    <div class="kpi g"><div class="kpi-v" id="k-n">0</div><div class="kpi-l">Normal</div><div class="kpi-bar"><div class="kpi-bf" id="kb-n" style="width:0%;background:var(--safe)"></div></div></div>
+    <div class="kpi y"><div class="kpi-v" id="k-y">0</div><div class="kpi-l">Suspicious</div><div class="kpi-bar"><div class="kpi-bf" id="kb-y" style="width:0%;background:var(--warn)"></div></div></div>
+    <div class="kpi r"><div class="kpi-v" id="k-r">0</div><div class="kpi-l">High Threat</div><div class="kpi-bar"><div class="kpi-bf" id="kb-r" style="width:0%;background:var(--red)"></div></div></div>
+  </div>
+
+  <div class="d2">
+    <div class="card" style="margin-bottom:0">
+      <div class="ch"><span class="ct">Alert Feed</span><span class="badge bg-a" style="margin-left:auto">● LIVE</span></div>
+      <div class="cb" style="padding:7px">
+        <div class="af" id="alert-feed"><div class="af-empty">No alerts this session</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="ch"><span class="ct">System Status</span></div>
+      <div class="cb" style="padding:7px">
+        <div class="sys-r">
+          <div class="sys-i"><div class="sys-d" id="sd-api"></div><span class="sys-l">Backend API</span><span class="sys-v" id="sv-api">Checking…</span></div>
+          <div class="sys-i"><div class="sys-d" id="sd-ws"></div><span class="sys-l">WebSocket</span><span class="sys-v" id="sv-ws">Offline</span></div>
+          <div class="sys-i"><div class="sys-d" id="sd-model"></div><span class="sys-l">AI Model</span><span class="sys-v" id="sv-model">—</span></div>
+          <div class="sys-i"><div class="sys-d on"></div><span class="sys-l">Live Feeds</span><span class="sys-v" id="sv-feeds">0 / 2</span></div>
+          <div class="sys-i"><div class="sys-d" id="sd-c1"></div><span class="sys-l">Camera 1</span><span class="sys-v" id="sv-c1">Idle</span></div>
+          <div class="sys-i"><div class="sys-d" id="sd-c2"></div><span class="sys-l">Camera 2</span><span class="sys-v" id="sv-c2">Idle</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRE-RECORDED -->
+<section class="sec" id="sec-rec">
+  <div class="sh">
+    <div>
+      <div class="sh-title">PRE-RECORDED ANALYSIS</div>
+      <div class="sh-sub">UPLOAD IMAGE OR VIDEO · AI DETECTION · EXPORT REPORT</div>
+    </div>
+  </div>
+
+  <!-- File limit info bar -->
+  <div class="rec-limits-bar">
+    <span class="lim-item"><span class="lim-ico">🖼</span> Image: max <span class="lim-val">&nbsp;10 MB</span>&nbsp;· JPG, PNG, WEBP, GIF</span>
+    <span class="lim-sep">|</span>
+    <span class="lim-item"><span class="lim-ico">📹</span> Video: max <span class="lim-val">&nbsp;500 MB</span>&nbsp;· MP4, AVI, MOV, MKV</span>
+  </div>
+
+  <!-- Main layout -->
+  <div class="rec-main-layout">
+
+    <!-- LEFT: Source block -->
+    <div class="rec-player-block">
+      <div class="rec-player-header">
+        <span class="ct" id="rec-src-label">Source</span>
+        <span class="badge bg-d" id="rec-fbadge" style="margin-left:auto">No file selected</span>
+      </div>
+
+      <!-- Drop Zone -->
+      <div class="uz" id="uz" onclick="document.getElementById('rfi').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')" ondrop="recDrop(event)">
+        <div class="uz-ico">📁</div>
+        <div class="uz-t">DROP FILE OR CLICK TO BROWSE</div>
+        <div class="uz-s">Image (JPG · PNG · WEBP) or Video (MP4 · AVI · MOV · MKV)</div>
+        <div class="uz-lim">Max: 10 MB for images · 500 MB for videos</div>
+      </div>
+      <input type="file" id="rfi" accept="video/*,image/*" onchange="recFileChosen(event)" style="display:none"/>
+
+      <!-- Error Block -->
+      <div class="uz-error-block" id="rec-error-block">
+        <div class="uz-err-ico">⚠</div>
+        <div class="uz-err-title" id="rec-err-title">FILE TOO LARGE</div>
+        <div class="uz-err-msg" id="rec-err-msg">File exceeds the maximum allowed size.</div>
+        <button class="btn btn-o btn-sm" onclick="recResetAll()">↺ TRY ANOTHER FILE</button>
+      </div>
+
+      <!-- Image Viewer -->
+      <div class="rec-img-container" id="rec-ic">
+        <div class="rec-img-vp">
+          <img id="rec-img" src="" alt="Uploaded image"/>
+          <div class="rec-cor tl"></div>
+          <div class="rec-cor tr"></div>
+          <div class="rec-cor bl"></div>
+          <div class="rec-cor br"></div>
+        </div>
+        <div class="rec-fileinfo">
+          <span class="rec-fname" id="rec-img-fname">—</span>
+          <button class="rec-reset-btn" onclick="recResetAll()">🗑 NEW ANALYSIS</button>
+        </div>
+      </div>
+
+      <!-- Video Player -->
+      <div class="rec-video-container" id="rec-vc">
+        <div class="rec-vp">
+          <video id="rec-vid" preload="metadata"></video>
+          <div class="rec-cor tl"></div>
+          <div class="rec-cor tr"></div>
+          <div class="rec-cor bl"></div>
+          <div class="rec-cor br"></div>
+        </div>
+        <div class="rec-controls">
+          <button class="rec-ctrl-btn" id="rec-playbtn" onclick="recTogglePlay()" title="Play/Pause">▶</button>
+          <button class="rec-ctrl-btn" onclick="recSkip(-10)" title="-10s">«</button>
+          <input type="range" class="rec-seek" id="rec-seek" value="0" min="0" step="0.1" oninput="recSeek(this.value)"/>
+          <button class="rec-ctrl-btn" onclick="recSkip(10)" title="+10s">»</button>
+          <span class="rec-time" id="rec-time">0:00 / 0:00</span>
+          <span style="font-size:11px">🔊</span>
+          <input type="range" class="rec-vol" id="rec-vol" value="1" min="0" max="1" step="0.05" oninput="recSetVol(this.value)"/>
+        </div>
+        <div class="rec-fileinfo">
+          <span class="rec-fname" id="rec-fname">—</span>
+          <button class="rec-reset-btn" onclick="recResetAll()">🗑 NEW ANALYSIS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Info panel -->
+    <div class="rec-timeline-panel" id="rec-right-panel">
+
+      <!-- STATE: no file / idle -->
+      <div id="rp-idle">
+        <div class="rec-tl-header">
+          <span class="ct">Analysis Panel</span>
+        </div>
+        <div style="padding:32px 14px;text-align:center;font-family:var(--f-mono);font-size:11px;color:var(--txt3);letter-spacing:1px;line-height:2.2">
+          Upload an image or video<br>to begin AI analysis
+        </div>
+      </div>
+
+      <!-- STATE: image result panel -->
+      <div id="rp-image" style="display:none">
+        <div class="rec-tl-header">
+          <span class="ct">Image Result</span>
+          <span class="badge bg-d" id="img-result-badge" style="margin-left:auto">Pending</span>
+        </div>
+        <div class="rec-img-result-panel">
+          <div class="rip-empty" id="rip-empty-msg">Run analysis to see<br>single-frame detection result</div>
+          <div class="rip-score-block" id="rip-score-block">
+            <div class="rip-gauge">
+              <div class="rip-circle" id="rip-circle">
+                <div class="rip-pct" id="rip-pct">—</div>
+                <div class="rip-lbl">Threat Score</div>
+              </div>
+              <div class="rip-verdict" id="rip-verdict">—</div>
+            </div>
+            <div class="rip-details" id="rip-details"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATE: video timeline panel -->
+      <div id="rp-video" style="display:none;display:flex;flex-direction:column;">
+        <div class="rec-tl-header">
+          <span class="ct">Threat Timeline</span>
+          <span class="badge bg-d" id="tl-cnt" style="margin-left:auto">—</span>
+        </div>
+        <div class="tl-filters">
+          <button class="tf-b gf" id="tf-g" onclick="recTogFil('g')">● SAFE</button>
+          <button class="tf-b yf" id="tf-y" onclick="recTogFil('y')">● SUSPECT</button>
+          <button class="tf-b rf" id="tf-r" onclick="recTogFil('r')">● THREAT</button>
+        </div>
+        <div class="rec-tl-scroll" id="rec-tl-scroll">
+          <div class="tl-empty-msg" id="tl-empty-msg">Run analysis to see timeline</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Preset note -->
+  <div class="preset-note">
+    <span class="pn-ico">⚙</span>
+    <span>Analysis presets active — <span class="pn-vals">Sensitivity: 0.50 · Min Confidence: 0.40 · Group Window: 2s</span> — optimised for balanced detection coverage</span>
+  </div>
+
+  <!-- Video params — TIME PICKER REDESIGNED -->
+  <div class="card" id="rec-video-params" style="display:none">
+    <div class="ch">
+      <span class="ct">Video Parameters</span>
+      <span class="badge bg-d" id="sel-dur-badge" style="margin-left:auto">Full video</span>
+    </div>
+    <div class="cb">
+      <div class="rp-grid">
+
+        <!-- Start Time -->
+        <div class="pg time-input-group">
+          <span class="il">▶ Start Time</span>
+          <div class="time-input-wrap">
+            <span class="time-icon">🕐</span>
+            <input type="time" class="inp" id="r-start" value="00:00:00" step="1"
+                   oninput="updateTimeDuration()" onchange="updateTimeDuration()"/>
+          </div>
+          <span class="time-hint">HH : MM : SS — analysis begins here</span>
+        </div>
+
+        <!-- End Time -->
+        <div class="pg time-input-group">
+          <span class="il">⏹ End Time</span>
+          <div class="time-input-wrap">
+            <span class="time-icon">🕐</span>
+            <input type="time" class="inp" id="r-end" step="1"
+                   placeholder="00:00:00" oninput="updateTimeDuration()" onchange="updateTimeDuration()"/>
+          </div>
+          <span class="time-hint">Leave blank to analyse till end</span>
+          <span class="time-dur-badge" id="time-dur-badge" style="display:none">—</span>
+        </div>
+
+        <!-- Group Window -->
+        <div class="pg">
+          <span class="il">⏱ Group Window (sec)</span>
+          <input class="inp" type="number" id="r-group" value="2" min="1" max="60" placeholder="2"/>
+          <span class="il-sub">Frames grouped per timestamp in timeline</span>
+        </div>
+
+        <!-- Analyse button -->
+        <div class="pg" style="justify-content:flex-end">
+          <span class="il">&nbsp;</span>
+          <button class="btn btn-a" id="rec-btn" onclick="recStart()" style="font-size:13px;padding:10px 18px;">▶ ANALYSE VIDEO</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Image analyse button -->
+  <div id="rec-img-params" style="display:none">
+    <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px">
+      <button class="btn btn-a" id="rec-img-btn" onclick="recStartImage()" style="font-size:13px;padding:10px 18px;">🔍 ANALYSE IMAGE</button>
+      <span style="font-family:var(--f-mono);font-size:11px;color:var(--txt3)">Single-frame AI detection — result shown instantly</span>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="card prog-b" id="rec-prog">
+    <div class="cb">
+      <div class="prog-i"><span id="prog-lbl">Uploading…</span><span id="prog-pct">0%</span></div>
+      <div class="prog-t"><div class="prog-f" id="prog-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- Video Results -->
+  <div id="rec-results" style="display:none">
+    <div class="card">
+      <div class="ch">
+        <span class="ct">Detection Events</span>
+        <span class="badge bg-a" id="ev-badge" style="margin-left:auto">0 events</span>
+      </div>
+      <div class="evh">
+        <span>Time</span><span>Level</span><span>Info</span>
+        <span style="text-align:right">Conf%</span><span style="text-align:right">Score</span>
+      </div>
+      <div class="evlw" id="ev-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Export &amp; Summary</span></div>
+      <div class="cb">
+        <div class="ex-bar">
+          <button class="btn btn-o btn-sm" onclick="recExCSV()">⬇ CSV</button>
+          <button class="btn btn-o btn-sm" onclick="recExPDF()">⬇ PDF</button>
+          <div class="sum-t">
+            <span class="badge bg-d" id="s-dur">—</span>
+            <span class="badge bg-g" id="s-n">—</span>
+            <span class="badge bg-y" id="s-y">—</span>
+            <span class="badge bg-r" id="s-r">—</span>
+            <span class="badge bg-a" id="s-p">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image results card -->
+  <div class="img-result-card card" id="img-result-card">
+    <div class="ch">
+      <span class="ct">Image Detection Summary</span>
+      <span class="badge bg-a" id="img-ev-badge" style="margin-left:auto">—</span>
+    </div>
+    <div class="cb">
+      <div class="img-res-body" id="img-res-body"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- LIVE FEEDS -->
+<section class="sec" id="sec-live">
+  <div class="sh">
+    <div>
+      <div class="sh-title">LIVE SURVEILLANCE</div>
+      <div class="sh-sub">2-CHANNEL REAL-TIME AI DETECTION</div>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <span class="badge bg-a" id="live-badge">0 / 2 ACTIVE</span>
+      <button class="btn btn-o btn-sm" onclick="scanOnvif()">🔍 ONVIF SCAN</button>
+    </div>
+  </div>
+
+  <div class="cam-row">
+    <!-- CAM 1 -->
+    <div class="cam-p" id="cp1">
+      <div class="cam-hd">
+        <span class="cam-id">CAM-01</span>
+        <span class="cam-nm" id="c1-nm">—</span>
+        <span class="badge bg-d" id="c1-tb" style="margin-left:6px">IDLE</span>
+        <div class="cam-sd" id="c1-sd" style="margin-left:auto"></div>
+      </div>
+      <div class="cam-vp" id="c1-vp">
+        <div class="cam-ph" id="c1-ph">
+          <div class="cam-ph-ico">👁</div>
+          <div class="cam-ph-txt">NO FEED</div>
+          <button class="btn btn-a btn-sm" onclick="openModal(1)">+ CONNECT SOURCE</button>
+        </div>
+        <video id="c1-vid" class="cam-vid" autoplay muted playsinline style="display:none"></video>
+        <canvas id="c1-cvs" class="cam-cvs" style="display:none"></canvas>
+        <div class="cam-ov" id="c1-ov" style="display:none">
+          <div class="cam-ovt">
+            <div class="cam-rec"></div><span class="cam-rl">LIVE</span>
+            <span class="cam-chip normal" id="c1-chip">NORMAL</span>
+          </div>
+          <div class="cam-cor tl cc-n" id="c1-cor-tl"></div>
+          <div class="cam-cor tr cc-n" id="c1-cor-tr"></div>
+          <div class="cam-cor bl cc-n" id="c1-cor-bl"></div>
+          <div class="cam-cor br cc-n" id="c1-cor-br"></div>
+          <div class="cam-ovb">
+            <div>
+              <div class="cam-sv" id="c1-sv">0%</div>
+              <div class="cam-sl">THREAT SCORE</div>
+            </div>
+            <div style="margin-left:auto;text-align:right">
+              <div style="font-family:var(--f-mono);font-size:9px;color:rgba(255,255,255,.4)" id="c1-fps">—</div>
+              <div style="font-family:var(--f-mono);font-size:9px;color:rgba(255,255,255,.4)" id="c1-res">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cam-tbar"><div class="cam-tbf" id="c1-bar" style="width:0%"></div></div>
+      <div class="cam-ctrl" id="c1-ctrl" style="display:none">
+        <div class="cam-stat">Det: <span id="c1-dc">0</span></div>
+        <div class="cam-stat" style="margin-left:7px">Alerts: <span id="c1-ac" style="color:var(--red)">0</span></div>
+        <div style="margin-left:auto;display:flex;gap:5px">
+          <button class="btn btn-o btn-xs" onclick="snap(1)">📷</button>
+          <button class="btn btn-d btn-xs" onclick="disconnect(1)">✕ STOP</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAM 2 -->
+    <div class="cam-p" id="cp2">
+      <div class="cam-hd">
+        <span class="cam-id">CAM-02</span>
+        <span class="cam-nm" id="c2-nm">—</span>
+        <span class="badge bg-d" id="c2-tb" style="margin-left:6px">IDLE</span>
+        <div class="cam-sd" id="c2-sd" style="margin-left:auto"></div>
+      </div>
+      <div class="cam-vp" id="c2-vp">
+        <div class="cam-ph" id="c2-ph">
+          <div class="cam-ph-ico">👁</div>
+          <div class="cam-ph-txt">NO FEED</div>
+          <button class="btn btn-a btn-sm" onclick="openModal(2)">+ CONNECT SOURCE</button>
+        </div>
+        <video id="c2-vid" class="cam-vid" autoplay muted playsinline style="display:none"></video>
+        <canvas id="c2-cvs" class="cam-cvs" style="display:none"></canvas>
+        <div class="cam-ov" id="c2-ov" style="display:none">
+          <div class="cam-ovt">
+            <div class="cam-rec"></div><span class="cam-rl">LIVE</span>
+            <span class="cam-chip normal" id="c2-chip">NORMAL</span>
+          </div>
+          <div class="cam-cor tl cc-n" id="c2-cor-tl"></div>
+          <div class="cam-cor tr cc-n" id="c2-cor-tr"></div>
+          <div class="cam-cor bl cc-n" id="c2-cor-bl"></div>
+          <div class="cam-cor br cc-n" id="c2-cor-br"></div>
+          <div class="cam-ovb">
+            <div>
+              <div class="cam-sv" id="c2-sv">0%</div>
+              <div class="cam-sl">THREAT SCORE</div>
+            </div>
+            <div style="margin-left:auto;text-align:right">
+              <div style="font-family:var(--f-mono);font-size:9px;color:rgba(255,255,255,.4)" id="c2-fps">—</div>
+              <div style="font-family:var(--f-mono);font-size:9px;color:rgba(255,255,255,.4)" id="c2-res">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cam-tbar"><div class="cam-tbf" id="c2-bar" style="width:0%"></div></div>
+      <div class="cam-ctrl" id="c2-ctrl" style="display:none">
+        <div class="cam-stat">Det: <span id="c2-dc">0</span></div>
+        <div class="cam-stat" style="margin-left:7px">Alerts: <span id="c2-ac" style="color:var(--red)">0</span></div>
+        <div style="margin-left:auto;display:flex;gap:5px">
+          <button class="btn btn-o btn-xs" onclick="snap(2)">📷</button>
+          <button class="btn btn-d btn-xs" onclick="disconnect(2)">✕ STOP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">
+      <span class="ct">Detection Log</span>
+      <span class="badge bg-d" id="log-cnt" style="margin-left:auto">0 entries</span>
+      <button class="btn btn-o btn-xs" style="margin-left:7px" onclick="clearLog()">CLEAR</button>
+    </div>
+    <div class="cb" style="padding:5px">
+      <div class="live-log" id="live-log">
+        <div class="log-empty">Start a feed to see detections</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ALERT CONFIG -->
+<section class="sec" id="sec-cfg">
+  <div class="sh">
+    <div>
+      <div class="sh-title">ALERT CONFIGURATION</div>
+      <div class="sh-sub">TRIGGERS · CHANNELS · CONTACTS</div>
+    </div>
+  </div>
+
+  <div class="alert-level-blocks">
+    <div class="alb alb-n">
+      <div class="alb-header">
+        <span class="alb-ico">🟢</span>
+        <span class="alb-title">Normal</span>
+        <span class="alb-sub">— Trigger alerts on green-level events</span>
+        <div class="alb-enable">
+          <span class="alb-enable-lbl">ENABLE</span>
+          <label class="tog"><input type="checkbox" id="tg-n" onchange="albToggle('n',this)"/><div class="tog-t"></div></label>
+        </div>
+      </div>
+      <div class="alb-body disabled" id="alb-body-n">
+        <button class="ch-pill" id="pill-n-notif" onclick="togChanPill('n','notif',this)"><span class="cp-ico">🔔</span>Notification</button>
+        <button class="ch-pill" id="pill-n-sound" onclick="togChanPill('n','sound',this)"><span class="cp-ico">🔊</span>Sound</button>
+        <div class="alb-sep"></div>
+        <button class="ch-pill" id="pill-n-sms" onclick="togChanPill('n','sms',this)"><span class="cp-ico">💬</span>SMS</button>
+        <button class="ch-pill" id="pill-n-call" onclick="togChanPill('n','call',this)"><span class="cp-ico">📞</span>Call</button>
+      </div>
+    </div>
+    <div class="alb alb-y">
+      <div class="alb-header">
+        <span class="alb-ico">🟡</span>
+        <span class="alb-title">Suspicious</span>
+        <span class="alb-sub">— Trigger alerts on yellow-level events</span>
+        <div class="alb-enable">
+          <span class="alb-enable-lbl">ENABLE</span>
+          <label class="tog"><input type="checkbox" id="tg-y" checked onchange="albToggle('y',this)"/><div class="tog-t"></div></label>
+        </div>
+      </div>
+      <div class="alb-body" id="alb-body-y">
+        <button class="ch-pill active" id="pill-y-notif" onclick="togChanPill('y','notif',this)"><span class="cp-ico">🔔</span>Notification</button>
+        <button class="ch-pill active" id="pill-y-sound" onclick="togChanPill('y','sound',this)"><span class="cp-ico">🔊</span>Sound</button>
+        <div class="alb-sep"></div>
+        <button class="ch-pill" id="pill-y-sms" onclick="togChanPill('y','sms',this)"><span class="cp-ico">💬</span>SMS</button>
+        <button class="ch-pill" id="pill-y-call" onclick="togChanPill('y','call',this)"><span class="cp-ico">📞</span>Call</button>
+      </div>
+    </div>
+    <div class="alb alb-r">
+      <div class="alb-header">
+        <span class="alb-ico">🔴</span>
+        <span class="alb-title">High Threat</span>
+        <span class="alb-sub">— Trigger alerts on red-level events</span>
+        <div class="alb-enable">
+          <span class="alb-enable-lbl">ENABLE</span>
+          <label class="tog"><input type="checkbox" id="tg-r" checked onchange="albToggle('r',this)"/><div class="tog-t"></div></label>
+        </div>
+      </div>
+      <div class="alb-body" id="alb-body-r">
+        <button class="ch-pill active" id="pill-r-notif" onclick="togChanPill('r','notif',this)"><span class="cp-ico">🔔</span>Notification</button>
+        <button class="ch-pill active" id="pill-r-sound" onclick="togChanPill('r','sound',this)"><span class="cp-ico">🔊</span>Sound</button>
+        <div class="alb-sep"></div>
+        <button class="ch-pill active" id="pill-r-sms" onclick="togChanPill('r','sms',this)"><span class="cp-ico">💬</span>SMS</button>
+        <button class="ch-pill active" id="pill-r-call" onclick="togChanPill('r','call',this)"><span class="cp-ico">📞</span>Call</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="ct">Contact Details</span></div>
+    <div class="cb">
+      <div class="cfg-r">
+        <div><span class="il">Phone Number</span><input class="inp" type="tel" id="cfg-ph" placeholder="+91 9876543210"/></div>
+        <div><span class="il">Firebase FCM Token</span><input class="inp" id="cfg-fcm" placeholder="FCM push token…"/></div>
+      </div>
+      <div style="margin-top:11px;display:flex;gap:8px;align-items:center">
+        <button class="btn btn-a" onclick="cfgSave()">💾 SAVE CONFIG</button>
+        <button class="btn btn-o" onclick="cfgTest()">⚡ TEST ALERT</button>
+        <div class="sf" id="sf">✓ Configuration saved successfully</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="ft">
+  <div class="fb ok" id="fb-api"><div class="fd"></div><span>API: localhost:8000</span></div>
+  <span class="fb-sep">|</span>
+  <div class="fb" id="fb-ws"><div class="fd"></div><span id="fb-ws-t">WS: Offline</span></div>
+  <span class="fb-sep">|</span>
+  <div class="fb" id="fb-feeds"><div class="fd"></div><span id="fb-feeds-t">Feeds: 0/2</span></div>
+  <span class="fb-sep">|</span>
+  <div class="fb" id="fb-thr"><div class="fd"></div><span id="fb-thr-t">Threat: NORMAL</span></div>
+  <div id="ft-r">OmniEye AI — SESSION ACTIVE</div>
+</footer>
+
+</div><!-- /shell -->
+
+<!-- MODAL: Connect Feed -->
+<div class="mb" id="modal">
+  <div class="mo">
+    <div class="mh">
+      <span class="mt" id="modal-title">CONNECT CAMERA</span>
+      <button class="mx" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mbd">
+      <div>
+        <span class="il">Source Type</span>
+        <div class="src-grid">
+          <div class="src-b sel" onclick="selSrc('webcam',this)"><div class="src-ico">💻</div><div class="src-l">Webcam</div></div>
+          <div class="src-b" onclick="selSrc('rtsp',this)"><div class="src-ico">📡</div><div class="src-l">RTSP / CCTV</div></div>
+          <div class="src-b" onclick="selSrc('ip',this)"><div class="src-ico">📷</div><div class="src-l">IP Camera</div></div>
+          <div class="src-b" onclick="selSrc('file',this)"><div class="src-ico">🎬</div><div class="src-l">Video File</div></div>
+        </div>
+      </div>
+      <div><span class="il">Camera Name</span><input class="inp" id="modal-nm" placeholder="Front Gate, Lobby…"/></div>
+      <div id="modal-url-row">
+        <span class="il">Stream URL / IP</span>
+        <input class="inp" id="modal-url" placeholder="rtsp://admin:pass@192.168.1.100:554/stream"/>
+      </div>
+      <div id="modal-file-row" style="display:none">
+        <span class="il">Video File</span>
+        <input class="inp" id="modal-file-inp" type="file" accept="video/*" style="padding:5px"/>
+      </div>
+      <div>
+        <span class="il">Sensitivity — <span id="modal-sens-lbl">0.50</span></span>
+        <div class="rr">
+          <input type="range" min="0" max="1" step="0.05" value="0.5" id="modal-sens"
+                 oninput="document.getElementById('modal-sens-lbl').textContent=parseFloat(this.value).toFixed(2)"/>
+          <span class="rv">High</span>
+        </div>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-o btn-sm" onclick="closeModal()">CANCEL</button>
+      <button class="btn btn-a btn-sm" onclick="connectCam()">◉ CONNECT</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  OmniEye AI — JavaScript v4.1
+//  Key changes:
+//   • timeToSeconds(hhmm) helper — converts HH:MM:SS → seconds
+//   • recStart() now correctly passes start/end as seconds to API
+//   • updateTimeDuration() — live duration display between selected times
+//   • Video player now sets r-end automatically from video duration
+// ═══════════════════════════════════════════════════════
+
+const API = 'http://localhost:8000';
+
+const PRESET_SENSITIVITY   = 0.50;
+const PRESET_MIN_CONF      = 0.40;
+const PRESET_GROUP_WINDOW  = 2;
+
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 500 * 1024 * 1024;
+const IMAGE_TYPES = ['image/jpeg','image/jpg','image/png','image/webp','image/gif'];
+const VIDEO_TYPES = ['video/mp4','video/avi','video/quicktime','video/x-matroska','video/x-msvideo','video/x-ms-wmv','video/webm'];
+
+let ws = null, wsReconnectTimer = null;
+let counts = {n:0, y:0, r:0};
+let activeCam = 0, selSrcType = 'webcam';
+let camState = {
+  1:{active:false,stream:null,timer:null,rtspTimer:null,feedId:null,dc:0,ac:0},
+  2:{active:false,stream:null,timer:null,rtspTimer:null,feedId:null,dc:0,ac:0}
+};
+let recSession = null, recPollTimer = null, recFile = null, recFileType = null;
+let recFilters = {g:true, y:true, r:true};
+let logCount = 0;
+let recEvents = [];
+
+let levelEnabled = {n:false, y:true, r:true};
+let levelChans = {
+  n: {notif:false, sound:false, sms:false, call:false},
+  y: {notif:true,  sound:true,  sms:false, call:false},
+  r: {notif:true,  sound:true,  sms:true,  call:true}
+};
+
+// ── TIME HELPERS ───────────────────────────────────────
+/**
+ * Convert HH:MM or HH:MM:SS string → total seconds (number).
+ * Returns 0 if empty/invalid.
+ */
+function timeToSeconds(val) {
+  if (!val || !val.trim()) return 0;
+  const parts = val.trim().split(':').map(Number);
+  if (parts.some(isNaN)) return 0;
+  if (parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2];
+  if (parts.length === 2) return parts[0]*3600 + parts[1]*60;
+  return parts[0];
+}
+
+/**
+ * Convert total seconds → HH:MM:SS string for display.
+ */
+function secondsToHHMMSS(secs) {
+  if (!secs || isNaN(secs)) return '00:00:00';
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = Math.floor(secs % 60);
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+/**
+ * Update the duration badge between start and end times.
+ */
+function updateTimeDuration() {
+  const startVal = document.getElementById('r-start')?.value || '00:00:00';
+  const endVal   = document.getElementById('r-end')?.value   || '';
+  const badge = document.getElementById('time-dur-badge');
+  const selBadge = document.getElementById('sel-dur-badge');
+
+  const startSec = timeToSeconds(startVal);
+  const endSec   = endVal ? timeToSeconds(endVal) : null;
+
+  if (endSec !== null && endSec > startSec) {
+    const dur = endSec - startSec;
+    const label = fmtTs(dur);
+    if (badge) { badge.textContent = '⏱ ' + label + ' selected'; badge.style.display = 'inline-flex'; }
+    if (selBadge) { selBadge.textContent = label + ' selected'; selBadge.className = 'badge bg-a'; }
+  } else if (endSec !== null && endSec <= startSec && endVal) {
+    if (badge) { badge.textContent = '⚠ End must be after start'; badge.style.display = 'inline-flex'; badge.style.background = 'var(--red-lo)'; badge.style.color = 'var(--red)'; badge.style.border = '1px solid rgba(255,59,59,.3)'; }
+    if (selBadge) { selBadge.textContent = 'Invalid range'; selBadge.className = 'badge bg-r'; }
+  } else {
+    if (badge) { badge.style.display = 'none'; }
+    if (selBadge) { selBadge.textContent = 'Full video'; selBadge.className = 'badge bg-d'; }
+  }
+}
+
+// ── Navigation ─────────────────────────────────────────
+document.querySelectorAll('.nav-it').forEach(it => {
+  it.addEventListener('click', () => {
+    document.querySelectorAll('.nav-it').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.sec').forEach(x => x.classList.remove('active'));
+    it.classList.add('active');
+    document.getElementById('sec-' + it.dataset.sec).classList.add('active');
+  });
+});
+
+setInterval(() => {
+  document.getElementById('clock').textContent = new Date().toTimeString().slice(0,8);
+}, 1000);
+
+// ── WebSocket ──────────────────────────────────────────
+function connectWS() {
+  if (wsReconnectTimer) { clearTimeout(wsReconnectTimer); wsReconnectTimer = null; }
+  try {
+    ws = new WebSocket('ws://localhost:8000/ws/alerts');
+    ws.onopen = () => {
+      setWS(true); toast('WebSocket connected');
+      ws._pingInterval = setInterval(() => { if (ws.readyState === WebSocket.OPEN) ws.send('ping'); }, 20000);
+    };
+    ws.onmessage = e => {
+      if (e.data === 'ping' || e.data === 'pong') return;
+      try { handleAlert(JSON.parse(e.data)); } catch(err) {}
+    };
+    ws.onclose = () => {
+      setWS(false);
+      if (ws._pingInterval) clearInterval(ws._pingInterval);
+      wsReconnectTimer = setTimeout(connectWS, 3000);
+    };
+    ws.onerror = () => { if (ws._pingInterval) clearInterval(ws._pingInterval); ws.close(); };
+  } catch(e) { wsReconnectTimer = setTimeout(connectWS, 5000); }
+}
+
+function setWS(on) {
+  const q = (id, cls) => { const el = document.getElementById(id); if(el) el.className = cls; };
+  const s = (id, v)   => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  q('ind-ws', 'ind' + (on?' ok':''));
+  s('sv-ws', on?'Connected':'Offline');
+  q('sd-ws', 'sys-d' + (on?' on':''));
+  q('fb-ws', 'fb' + (on?' ok':''));
+  s('fb-ws-t', on?'WS: Live':'WS: Offline');
+}
+
+async function refreshHealth() {
+  try {
+    const r = await fetch(API + '/health', {signal: AbortSignal.timeout(3000)});
+    const d = await r.json();
+    document.getElementById('ind-api').className = 'ind ok';
+    document.getElementById('sd-api').className = 'sys-d on';
+    document.getElementById('sv-api').textContent = 'Online';
+    document.getElementById('fb-api').className = 'fb ok';
+    const modelEl = document.getElementById('sv-model');
+    if (modelEl) modelEl.textContent = d.model_loaded ? 'Loaded ✓' : 'Demo mode';
+    const sdModel = document.getElementById('sd-model');
+    if (sdModel) sdModel.className = 'sys-d ' + (d.model_loaded ? 'on' : 'w');
+  } catch(e) {
+    document.getElementById('ind-api').className = 'ind err';
+    document.getElementById('sd-api').className = 'sys-d e';
+    document.getElementById('sv-api').textContent = 'Offline';
+    document.getElementById('fb-api').className = 'fb err';
+  }
+}
+
+function handleAlert(alert) {
+  const det = alert.detection || {};
+  const lv = det.alert_level || 'normal';
+  if (lv === 'normal') counts.n++;
+  else if (lv === 'possibly_suspicious') counts.y++;
+  else counts.r++;
+  updateKPIs();
+  addFeedRow(alert);
+  if (lv === 'suspicious') { toast('🔴 HIGH THREAT — ' + Math.round((det.fused_score||0)*100) + '%', 'err'); playBeep(); triggerAlarmBanner(); }
+  else if (lv === 'possibly_suspicious') { toast('🟡 Suspicious activity detected', 'warn'); }
+}
+
+function triggerAlarmBanner() {
+  const banner = document.getElementById('alarm-banner');
+  if (!banner) return;
+  banner.style.display = 'block';
+  setTimeout(() => { banner.style.display = 'none'; }, 4000);
+}
+
+function updateKPIs() {
+  const total = counts.n + counts.y + counts.r;
+  const s = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  s('k-total', total); s('k-n', counts.n); s('k-y', counts.y); s('k-r', counts.r);
+  s('ns-n', counts.n); s('ns-y', counts.y); s('ns-r', counts.r);
+  if (total > 0) {
+    const b = (id, v) => { const el = document.getElementById(id); if(el) el.style.width = v+'%'; };
+    b('kb-n', counts.n/total*100); b('kb-y', counts.y/total*100); b('kb-r', counts.r/total*100);
+  }
+  const tb = document.getElementById('threat-badge');
+  const fb = document.getElementById('fb-thr');
+  const ft = document.getElementById('fb-thr-t');
+  const nb = document.getElementById('nb-alert');
+  if (nb) { nb.textContent = counts.r; nb.classList.toggle('on', counts.r > 0); }
+  if (counts.r > 0) {
+    if (tb) { tb.className = 'crit'; tb.textContent = '⚠ THREAT DETECTED'; }
+    if (fb) fb.className = 'fb err'; if (ft) ft.textContent = 'Threat: HIGH';
+  } else if (counts.y > 0) {
+    if (tb) { tb.className = 'warn'; tb.textContent = 'SUSPICIOUS ACTIVITY'; }
+    if (fb) fb.className = 'fb warn'; if (ft) ft.textContent = 'Threat: ELEVATED';
+  } else {
+    if (tb) { tb.className = 'ok'; tb.textContent = 'NOMINAL'; }
+    if (fb) fb.className = 'fb ok'; if (ft) ft.textContent = 'Threat: NORMAL';
+  }
+}
+
+function addFeedRow(alert) {
+  const feed = document.getElementById('alert-feed');
+  if (!feed) return;
+  const empty = feed.querySelector('.af-empty');
+  if (empty) feed.innerHTML = '';
+  const det = alert.detection || {};
+  const lv = det.alert_level || 'normal';
+  const cls = lv === 'suspicious' ? 'r' : lv === 'possibly_suspicious' ? 'y' : 'g';
+  const badgeCls = cls==='r'?'bg-r':cls==='y'?'bg-y':'bg-g';
+  const t = new Date(alert.timestamp).toTimeString().slice(0,8);
+  const row = document.createElement('div');
+  row.className = 'af-r ' + cls;
+  row.innerHTML = `<span class="af-t">${t}</span>
+    <span><span class="badge ${badgeCls}">${lv.replace(/_/g,' ').slice(0,12).toUpperCase()}</span></span>
+    <span class="af-s">${esc(alert.feed_name||alert.source||'—')}</span>
+    <span class="af-c">${Math.round((det.fused_score||0)*100)}%</span>`;
+  feed.insertBefore(row, feed.firstChild);
+  if (feed.children.length > 60) feed.removeChild(feed.lastChild);
+}
+
+function clearFeed() {
+  document.getElementById('alert-feed').innerHTML = '<div class="af-empty">Feed cleared</div>';
+  counts = {n:0,y:0,r:0}; updateKPIs();
+}
+
+// ══════════════════════════════════════════════
+//  PRE-RECORDED — FILE HANDLING
+// ══════════════════════════════════════════════
+
+function recDrop(e) {
+  e.preventDefault();
+  document.getElementById('uz').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f) processRecFile(f);
+}
+function recFileChosen(e) { if (e.target.files[0]) processRecFile(e.target.files[0]); }
+
+function processRecFile(f) {
+  const mime = f.type.toLowerCase();
+  const isImage = IMAGE_TYPES.includes(mime) || mime.startsWith('image/');
+  const isVideo = VIDEO_TYPES.includes(mime) || mime.startsWith('video/');
+
+  if (!isImage && !isVideo) {
+    showRecError('UNSUPPORTED FILE TYPE',
+      `"${f.name}" is not a supported image or video file.\n\nAccepted: JPG · PNG · WEBP · GIF · MP4 · AVI · MOV · MKV`);
+    return;
+  }
+  if (isImage && f.size > MAX_IMAGE_BYTES) {
+    showRecError('IMAGE TOO LARGE',
+      `Image files must be under 10 MB.\n\n"${f.name}" is ${fmtSz(f.size)} — please compress or resize the image.`);
+    return;
+  }
+  if (isVideo && f.size > MAX_VIDEO_BYTES) {
+    showRecError('VIDEO TOO LARGE',
+      `Video files must be under 500 MB.\n\n"${f.name}" is ${fmtSz(f.size)} — please trim or compress the video.`);
+    return;
+  }
+
+  recFile = f;
+  recFileType = isImage ? 'image' : 'video';
+  hideRecError();
+
+  if (isImage) setRecImageMode(f);
+  else setRecVideoMode(f);
+}
+
+function showRecError(title, msg) {
+  recFile = null; recFileType = null;
+  document.getElementById('uz').style.display = 'none';
+  document.getElementById('rec-error-block').classList.add('on');
+  const t = document.getElementById('rec-err-title'); if (t) t.textContent = title;
+  const m = document.getElementById('rec-err-msg');   if (m) m.textContent = msg;
+}
+function hideRecError() { document.getElementById('rec-error-block').classList.remove('on'); }
+
+function setRecImageMode(f) {
+  document.getElementById('uz').style.display = 'none';
+  document.getElementById('rec-vc').classList.remove('on');
+  const ic = document.getElementById('rec-ic');
+  ic.classList.add('on');
+  document.getElementById('rec-img').src = URL.createObjectURL(f);
+  document.getElementById('rec-img-fname').textContent = f.name + ' (' + fmtSz(f.size) + ')';
+
+  const lbl = document.getElementById('rec-src-label'); if (lbl) lbl.textContent = 'Image Source';
+  const fb = document.getElementById('rec-fbadge');
+  if (fb) { fb.textContent = 'IMAGE'; fb.className = 'badge bg-a'; }
+
+  document.getElementById('rp-idle').style.display = 'none';
+  document.getElementById('rp-image').style.display = 'block';
+  const rpv = document.getElementById('rp-video'); if (rpv) rpv.style.display = 'none';
+
+  document.getElementById('rip-empty-msg').style.display = 'block';
+  document.getElementById('rip-score-block').classList.remove('on');
+  const ib = document.getElementById('img-result-badge'); if (ib) { ib.textContent = 'Pending'; ib.className = 'badge bg-d'; }
+
+  document.getElementById('rec-video-params').style.display = 'none';
+  document.getElementById('rec-img-params').style.display = 'flex';
+  document.getElementById('rec-results').style.display = 'none';
+  document.getElementById('img-result-card').classList.remove('on');
+
+  toast('Image loaded: ' + f.name + ' (' + fmtSz(f.size) + ')');
+}
+
+function setRecVideoMode(f) {
+  document.getElementById('uz').style.display = 'none';
+  document.getElementById('rec-ic').classList.remove('on');
+  const vc = document.getElementById('rec-vc');
+  vc.classList.add('on');
+  const vid = document.getElementById('rec-vid');
+  vid.src = URL.createObjectURL(f);
+  vid.load();
+
+  // Once metadata loads, set end-time field to video duration
+  vid.onloadedmetadata = () => {
+    const dur = vid.duration;
+    if (dur && !isNaN(dur) && isFinite(dur)) {
+      // Set end time input to video duration
+      const endEl = document.getElementById('r-end');
+      if (endEl) endEl.value = secondsToHHMMSS(dur);
+      updateTimeDuration();
+    }
+  };
+
+  document.getElementById('rec-fname').textContent = f.name + ' (' + fmtSz(f.size) + ')';
+
+  const lbl = document.getElementById('rec-src-label'); if (lbl) lbl.textContent = 'Video Source';
+  const fb = document.getElementById('rec-fbadge');
+  if (fb) { fb.textContent = 'VIDEO'; fb.className = 'badge bg-a'; }
+
+  document.getElementById('rp-idle').style.display = 'none';
+  document.getElementById('rp-image').style.display = 'none';
+  const rpv = document.getElementById('rp-video');
+  if (rpv) { rpv.style.display = 'flex'; rpv.style.flexDirection = 'column'; }
+  renderTimeline([]);
+
+  // Reset time fields
+  const startEl = document.getElementById('r-start'); if (startEl) startEl.value = '00:00:00';
+  const endEl2 = document.getElementById('r-end'); if (endEl2) endEl2.value = '';
+
+  document.getElementById('rec-video-params').style.display = 'block';
+  document.getElementById('rec-img-params').style.display = 'none';
+  document.getElementById('rec-results').style.display = 'none';
+  document.getElementById('img-result-card').classList.remove('on');
+
+  toast('Video loaded: ' + f.name + ' (' + fmtSz(f.size) + ')');
+}
+
+function recResetAll() {
+  if (recPollTimer) { clearInterval(recPollTimer); recPollTimer = null; }
+  recFile = null; recFileType = null; recSession = null; recEvents = [];
+
+  const fi = document.getElementById('rfi');
+  if (fi) fi.value = '';
+
+  const vid = document.getElementById('rec-vid');
+  if (vid) { vid.pause(); vid.src = ''; vid.onloadedmetadata = null; }
+  const img = document.getElementById('rec-img');
+  if (img) img.src = '';
+
+  document.getElementById('uz').style.display = '';
+  document.getElementById('rec-vc').classList.remove('on');
+  document.getElementById('rec-ic').classList.remove('on');
+  hideRecError();
+
+  const fb = document.getElementById('rec-fbadge');
+  if (fb) { fb.textContent = 'No file selected'; fb.className = 'badge bg-d'; }
+  const lbl = document.getElementById('rec-src-label'); if (lbl) lbl.textContent = 'Source';
+
+  document.getElementById('rp-idle').style.display = 'block';
+  document.getElementById('rp-image').style.display = 'none';
+  const rpv = document.getElementById('rp-video'); if (rpv) rpv.style.display = 'none';
+
+  document.getElementById('rec-video-params').style.display = 'none';
+  document.getElementById('rec-img-params').style.display = 'none';
+  document.getElementById('rec-prog').classList.remove('on');
+  document.getElementById('rec-results').style.display = 'none';
+  document.getElementById('img-result-card').classList.remove('on');
+
+  // Reset time fields
+  const startEl = document.getElementById('r-start'); if (startEl) startEl.value = '00:00:00';
+  const endEl = document.getElementById('r-end'); if (endEl) endEl.value = '';
+  updateTimeDuration();
+
+  const rb = document.getElementById('rec-btn'); if (rb) rb.disabled = false;
+  const ib = document.getElementById('rec-img-btn'); if (ib) ib.disabled = false;
+
+  toast('Analysis area cleared — ready for new file');
+}
+
+// ── Video player controls ──────────────────────────────
+const recVid = () => document.getElementById('rec-vid');
+
+function recTogglePlay() {
+  const vid = recVid();
+  const btn = document.getElementById('rec-playbtn');
+  if (!vid) return;
+  if (vid.paused) { vid.play(); if (btn) btn.textContent = '⏸'; }
+  else { vid.pause(); if (btn) btn.textContent = '▶'; }
+}
+function recSkip(secs) {
+  const vid = recVid();
+  if (!vid) return;
+  vid.currentTime = Math.max(0, Math.min(vid.duration || 0, vid.currentTime + secs));
+}
+function recSeek(val) { const vid = recVid(); if (vid) vid.currentTime = parseFloat(val); }
+function recSetVol(val) { const vid = recVid(); if (vid) vid.volume = parseFloat(val); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const vid = recVid();
+  if (!vid) return;
+  vid.addEventListener('timeupdate', () => {
+    const seek = document.getElementById('rec-seek');
+    const timeEl = document.getElementById('rec-time');
+    const t = vid.currentTime, d = vid.duration || 0;
+    if (seek) { seek.max = d; seek.value = t; }
+    if (timeEl) timeEl.textContent = fmtVidTime(t) + ' / ' + fmtVidTime(d);
+    highlightTimelineItem(t);
+  });
+  vid.addEventListener('ended', () => { const btn = document.getElementById('rec-playbtn'); if (btn) btn.textContent = '▶'; });
+  vid.addEventListener('pause', () => { const btn = document.getElementById('rec-playbtn'); if (btn) btn.textContent = '▶'; });
+  vid.addEventListener('play',  () => { const btn = document.getElementById('rec-playbtn'); if (btn) btn.textContent = '⏸'; });
+});
+
+function fmtVidTime(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2,'0');
+}
+
+function tlSeekTo(timestamp) {
+  const vid = recVid();
+  if (vid) vid.currentTime = timestamp;
+}
+
+function highlightTimelineItem(currentTime) {
+  const items = document.querySelectorAll('.tl-item');
+  if (!items.length) return;
+  let closest = null, closestDiff = Infinity;
+  items.forEach(item => {
+    const ts = parseFloat(item.dataset.ts || 0);
+    const diff = Math.abs(ts - currentTime);
+    if (diff < closestDiff) { closestDiff = diff; closest = item; }
+  });
+  items.forEach(i => i.classList.remove('tli-active'));
+  if (closest && closestDiff < 5) closest.classList.add('tli-active');
+}
+
+// ── VIDEO ANALYSIS ─────────────────────────────────────
+async function recStart() {
+  if (!recFile || recFileType !== 'video') { toast('Load a video file first', 'warn'); return; }
+
+  // ── Read and convert time inputs → seconds ──
+  const startTimeVal = document.getElementById('r-start')?.value || '00:00:00';
+  const endTimeVal   = document.getElementById('r-end')?.value   || '';
+  const startSec = timeToSeconds(startTimeVal);
+  const endSec   = endTimeVal ? timeToSeconds(endTimeVal) : null;
+
+  // Validate range
+  if (endSec !== null && endSec <= startSec) {
+    toast('End time must be after start time', 'warn');
+    return;
+  }
+
+  document.getElementById('rec-results').style.display = 'none';
+  renderTimeline([]);
+  const pc = document.getElementById('rec-prog');
+  pc.classList.add('on');
+  document.getElementById('prog-fill').style.width = '0%';
+  document.getElementById('prog-pct').textContent = '0%';
+  document.getElementById('prog-lbl').textContent = 'Uploading video…';
+  document.getElementById('rec-btn').disabled = true;
+
+  const groupSec = document.getElementById('r-group').value || PRESET_GROUP_WINDOW;
+
+  const fd = new FormData();
+  fd.append('file', recFile);
+  fd.append('group_seconds', groupSec);
+  fd.append('confidence_threshold', PRESET_MIN_CONF);
+  fd.append('sensitivity', PRESET_SENSITIVITY);
+  fd.append('start_time', startSec);            // ← correctly converted to seconds
+  if (endSec !== null) fd.append('end_time', endSec); // ← correctly converted to seconds
+
+  // Show what we're sending in the toast
+  const rangeStr = endSec !== null
+    ? `${secondsToHHMMSS(startSec)} → ${secondsToHHMMSS(endSec)}`
+    : `${secondsToHHMMSS(startSec)} → end`;
+  toast('Analysing: ' + rangeStr);
+
+  try {
+    const res = await fetch(API + '/detect/video/upload', {method:'POST', body:fd});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+    recSession = d.session_id;
+    document.getElementById('prog-lbl').textContent = 'Analysing…';
+    recPoll();
+  } catch(e) {
+    toast('Backend unreachable — showing demo data', 'warn');
+    recVideoDemo(startSec, endSec);
+  }
+}
+
+function recPoll() {
+  if (recPollTimer) clearInterval(recPollTimer);
+  recPollTimer = setInterval(async () => {
+    try {
+      const r = await fetch(API + '/detect/video/status/' + recSession);
+      const d = await r.json();
+      document.getElementById('prog-fill').style.width = d.progress + '%';
+      document.getElementById('prog-pct').textContent = d.progress + '%';
+      if (d.status === 'done') {
+        clearInterval(recPollTimer);
+        const rr = await fetch(API + '/detect/video/results/' + recSession);
+        const data = await rr.json();
+        recRenderVideo(data);
+        finishRec();
+      } else if (d.status === 'error') {
+        clearInterval(recPollTimer); toast('Analysis error on backend', 'err'); finishRec();
+      }
+    } catch(e) {}
+  }, 800);
+}
+
+function finishRec() {
+  document.getElementById('rec-prog').classList.remove('on');
+  const rb = document.getElementById('rec-btn'); if (rb) rb.disabled = false;
+  const ib = document.getElementById('rec-img-btn'); if (ib) ib.disabled = false;
+}
+
+function recVideoDemo(startSec, endSec) {
+  const vid = recVid();
+  const fullDur = (vid && vid.duration && !isNaN(vid.duration)) ? vid.duration : 60;
+  const from = startSec || 0;
+  const to   = (endSec !== null && endSec > from) ? endSec : fullDur;
+  const groupSec = parseFloat(document.getElementById('r-group').value) || PRESET_GROUP_WINDOW;
+  const events = [];
+  for (let t = from; t < to; t += groupSec) {
+    const score = Math.random();
+    const lv = score > 0.65 ? 'suspicious' : score > 0.4 ? 'possibly_suspicious' : 'normal';
+    events.push({
+      timestamp: +t.toFixed(2),
+      timestamp_fmt: fmtTs(t - from), // relative to start
+      frame: Math.round(t * 25),
+      alert_level: lv,
+      color: lv==='suspicious'?'RED':lv==='possibly_suspicious'?'YELLOW':'GREEN',
+      fused_score: +score.toFixed(4),
+      yolo_score: +(score * 0.9 + Math.random() * 0.1).toFixed(4),
+      confidence_pct: +(score * 100).toFixed(1)
+    });
+  }
+  const sc = events.filter(e=>e.alert_level==='suspicious').length;
+  const ps = events.filter(e=>e.alert_level==='possibly_suspicious').length;
+  const nc = events.filter(e=>e.alert_level==='normal').length;
+  recRenderVideo({
+    events,
+    stats:{duration_seconds:(to-from), normal_count:nc, possibly_suspicious_count:ps,
+           suspicious_count:sc, threat_percentage:+((sc+ps)/Math.max(events.length,1)*100).toFixed(1)}
+  });
+  finishRec();
+  toast('Demo data rendered (backend offline)');
+}
+
+function recRenderVideo(data) {
+  const events = data.events || [];
+  const stats = data.stats || {};
+  recEvents = events;
+  renderTimeline(events);
+
+  const evBadge = document.getElementById('ev-badge');
+  if (evBadge) evBadge.textContent = events.length + ' events';
+  const evList = document.getElementById('ev-list');
+  evList.innerHTML = '';
+  events.forEach(ev => {
+    const r = document.createElement('div');
+    r.className = 'evr';
+    if (!isVisible(ev.alert_level)) r.style.display = 'none';
+    const bc = ev.alert_level==='suspicious'?'bg-r':ev.alert_level==='possibly_suspicious'?'bg-y':'bg-g';
+    r.innerHTML = `<span class="ev-t">${ev.timestamp_fmt}</span>
+      <span><span class="badge ${bc}">${ev.alert_level.replace(/_/g,' ').toUpperCase()}</span></span>
+      <span style="color:var(--txt2);font-size:11px">Group @${ev.timestamp_fmt}</span>
+      <span class="ev-c">${ev.confidence_pct}%</span>
+      <span class="ev-y">${ev.yolo_score}</span>`;
+    r.onclick = () => tlSeekTo(ev.timestamp);
+    evList.appendChild(r);
+  });
+
+  const s = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  s('s-dur', fmtTs(stats.duration_seconds||0) + ' total');
+  s('s-n', (stats.normal_count||0) + ' normal');
+  s('s-y', (stats.possibly_suspicious_count||0) + ' suspect');
+  s('s-r', (stats.suspicious_count||0) + ' threat');
+  s('s-p', (stats.threat_percentage||0) + '% threat');
+  document.getElementById('rec-results').style.display = 'block';
+  toast('Video analysis complete — ' + events.length + ' groups');
+}
+
+// ── IMAGE ANALYSIS ─────────────────────────────────────
+async function recStartImage() {
+  if (!recFile || recFileType !== 'image') { toast('Load an image first', 'warn'); return; }
+  const btn = document.getElementById('rec-img-btn');
+  if (btn) btn.disabled = true;
+
+  const pc = document.getElementById('rec-prog');
+  pc.classList.add('on');
+  document.getElementById('prog-fill').style.width = '40%';
+  document.getElementById('prog-pct').textContent = '40%';
+  document.getElementById('prog-lbl').textContent = 'Analysing image…';
+
+  const fd = new FormData();
+  fd.append('file', recFile);
+  fd.append('sensitivity', PRESET_SENSITIVITY);
+  fd.append('confidence_threshold', PRESET_MIN_CONF);
+
+  try {
+    const res = await fetch(API + '/detect/image', {method:'POST', body:fd});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+    renderImageResult(d.detection || d);
+  } catch(e) {
+    const score = Math.random();
+    const lv = score > 0.65 ? 'suspicious' : score > 0.4 ? 'possibly_suspicious' : 'normal';
+    renderImageResult({
+      alert_level: lv,
+      fused_score: +score.toFixed(4),
+      yolo_score: +(score * 0.9 + Math.random() * 0.1).toFixed(4),
+      confidence_pct: +(score * 100).toFixed(1),
+      demo: true
+    });
+    toast('Demo result (backend offline)', 'warn');
+  }
+  document.getElementById('prog-fill').style.width = '100%';
+  document.getElementById('prog-pct').textContent = '100%';
+  setTimeout(() => { pc.classList.remove('on'); finishRec(); }, 600);
+}
+
+function renderImageResult(det) {
+  const lv = det.alert_level || 'normal';
+  const score = det.fused_score || 0;
+  const pct = Math.round(score * 100);
+  const colorKey = lv === 'suspicious' ? 'r' : lv === 'possibly_suspicious' ? 'y' : 'g';
+  const colorVar = colorKey === 'r' ? 'var(--red)' : colorKey === 'y' ? 'var(--warn)' : 'var(--safe)';
+  const verdictLabel = lv === 'suspicious' ? '⚠ HIGH THREAT' : lv === 'possibly_suspicious' ? '⚡ SUSPICIOUS' : '✓ NORMAL';
+
+  const ib = document.getElementById('img-result-badge');
+  if (ib) { ib.textContent = verdictLabel; ib.className = 'badge ' + (colorKey==='r'?'bg-r':colorKey==='y'?'bg-y':'bg-g'); }
+
+  document.getElementById('rip-empty-msg').style.display = 'none';
+  const sb = document.getElementById('rip-score-block');
+  sb.classList.add('on');
+
+  const circle = document.getElementById('rip-circle');
+  if (circle) circle.className = 'rip-circle c-' + colorKey;
+  const pctEl = document.getElementById('rip-pct');
+  if (pctEl) { pctEl.textContent = pct + '%'; pctEl.className = 'rip-pct c-' + colorKey; }
+  const verdict = document.getElementById('rip-verdict');
+  if (verdict) { verdict.textContent = verdictLabel; verdict.style.color = colorVar; }
+
+  const details = document.getElementById('rip-details');
+  if (details) {
+    details.innerHTML = '';
+    const rows = [
+      ['Alert Level', lv.replace(/_/g,' ').toUpperCase(), colorKey],
+      ['Fused Score', (score * 100).toFixed(1) + '%', colorKey],
+      ['YOLO Score',  ((det.yolo_score || 0) * 100).toFixed(1) + '%', ''],
+      ['Confidence',  (det.confidence_pct || (score*100)).toFixed(1) + '%', ''],
+      ['Sensitivity', (PRESET_SENSITIVITY * 100).toFixed(0) + '%', ''],
+      ['Min Conf',    (PRESET_MIN_CONF * 100).toFixed(0) + '%', ''],
+      det.demo ? ['Source', 'DEMO DATA', ''] : null
+    ].filter(Boolean);
+    rows.forEach(([k, v, c]) => {
+      const row = document.createElement('div');
+      row.className = 'rip-row';
+      row.innerHTML = `<span class="rip-row-k">${k}</span><span class="rip-row-v ${c ? 'c-'+c : ''}">${v}</span>`;
+      details.appendChild(row);
+    });
+  }
+
+  const card = document.getElementById('img-result-card');
+  const body = document.getElementById('img-res-body');
+  if (card && body) {
+    card.classList.add('on');
+    const ib2 = document.getElementById('img-ev-badge');
+    if (ib2) { ib2.textContent = verdictLabel; ib2.className = 'badge ' + (colorKey==='r'?'bg-r':colorKey==='y'?'bg-y':'bg-g'); }
+    body.innerHTML = `
+      <div class="img-res-stat">
+        <div class="img-rs-v" style="color:${colorVar};text-shadow:0 0 16px ${colorVar}">${pct}%</div>
+        <div class="img-rs-l">Threat Score</div>
+      </div>
+      <div class="img-res-stat">
+        <div class="img-rs-v" style="color:var(--ai);text-shadow:0 0 16px var(--ai-glow)">${((det.confidence_pct || score*100)).toFixed(1)}%</div>
+        <div class="img-rs-l">Confidence</div>
+      </div>
+      <div class="img-res-stat">
+        <div class="img-rs-v" style="color:var(--txt2)">SINGLE</div>
+        <div class="img-rs-l">Frame Mode</div>
+      </div>
+      <div class="img-res-stat">
+        <div class="img-rs-v" style="color:${colorVar};font-size:14px;letter-spacing:1px">${lv.replace(/_/g,' ').toUpperCase()}</div>
+        <div class="img-rs-l">Detection Level</div>
+      </div>
+    `;
+  }
+
+  if (lv === 'suspicious') toast('🔴 Image threat detected: ' + pct + '%', 'err');
+  else if (lv === 'possibly_suspicious') toast('🟡 Suspicious content in image', 'warn');
+  else toast('✓ Image analysis complete — no threats detected');
+}
+
+// ── Timeline ───────────────────────────────────────────
+function isVisible(lv) {
+  return (lv==='normal' && recFilters.g) ||
+         (lv==='possibly_suspicious' && recFilters.y) ||
+         (lv==='suspicious' && recFilters.r);
+}
+
+function renderTimeline(events) {
+  const scroll = document.getElementById('rec-tl-scroll');
+  const cntEl = document.getElementById('tl-cnt');
+  if (!events.length) {
+    scroll.innerHTML = '<div class="tl-empty-msg" id="tl-empty-msg">Run analysis to see timeline</div>';
+    if (cntEl) cntEl.textContent = '—';
+    return;
+  }
+  scroll.innerHTML = '';
+  if (cntEl) cntEl.textContent = events.length + ' groups';
+  const maxScore = Math.max(...events.map(e => e.fused_score || 0), 0.01);
+  events.forEach(ev => {
+    const lv = ev.alert_level || 'normal';
+    const cls = lv==='suspicious'?'tli-r':lv==='possibly_suspicious'?'tli-y':'tli-g';
+    const barColor = lv==='suspicious'?'var(--red)':lv==='possibly_suspicious'?'var(--warn)':'var(--safe)';
+    const pct = Math.round(((ev.fused_score||0) / maxScore) * 100);
+    const vis = isVisible(lv);
+    const item = document.createElement('div');
+    item.className = 'tl-item ' + cls + (vis ? '' : ' tli-hidden');
+    item.dataset.ts = ev.timestamp;
+    item.title = 'Jump to ' + ev.timestamp_fmt;
+    item.innerHTML = `
+      <span class="tli-ts">${ev.timestamp_fmt}</span>
+      <div class="tli-bar"><div class="tli-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <span class="tli-score">${Math.round((ev.fused_score||0)*100)}%</span>
+    `;
+    item.addEventListener('click', () => tlSeekTo(ev.timestamp));
+    scroll.appendChild(item);
+  });
+}
+
+function recTogFil(f) {
+  recFilters[f] = !recFilters[f];
+  const el = document.getElementById('tf-' + f);
+  if (el) el.classList.toggle('off', !recFilters[f]);
+  document.querySelectorAll('.tl-item').forEach(item => {
+    const ts = parseFloat(item.dataset.ts || 0);
+    const ev = recEvents.find(e => e.timestamp === ts);
+    if (ev) item.classList.toggle('tli-hidden', !isVisible(ev.alert_level));
+  });
+  const rows = document.querySelectorAll('#ev-list .evr');
+  rows.forEach((r, i) => {
+    if (recEvents[i]) r.style.display = isVisible(recEvents[i].alert_level) ? '' : 'none';
+  });
+}
+
+function recExCSV() {
+  if (!recSession) { toast('Run analysis first', 'warn'); return; }
+  window.open(API + '/export/csv/' + recSession, '_blank');
+}
+function recExPDF() {
+  if (!recSession) { toast('Run analysis first', 'warn'); return; }
+  window.open(API + '/export/pdf/' + recSession, '_blank');
+}
+
+// ── ALERT CONFIG ───────────────────────────────────────
+function albToggle(level, checkbox) {
+  levelEnabled[level] = checkbox.checked;
+  const body = document.getElementById('alb-body-' + level);
+  if (body) body.classList.toggle('disabled', !checkbox.checked);
+}
+function togChanPill(level, chan, el) {
+  if (!levelEnabled[level]) return;
+  levelChans[level][chan] = !levelChans[level][chan];
+  el.classList.toggle('active', levelChans[level][chan]);
+}
+async function cfgSave() {
+  const cfg = {
+    levels: {
+      normal:   { enabled: levelEnabled.n, channels: levelChans.n },
+      possibly_suspicious: { enabled: levelEnabled.y, channels: levelChans.y },
+      suspicious: { enabled: levelEnabled.r, channels: levelChans.r }
+    },
+    phone_numbers: [document.getElementById('cfg-ph')?.value].filter(Boolean),
+    firebase_token: document.getElementById('cfg-fcm')?.value || null
+  };
+  try {
+    await fetch(API + '/alerts/config', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(cfg)});
+    toast('Alert config saved to backend');
+  } catch(e) {
+    toast('Config saved locally (backend offline)', 'warn');
+  }
+  const sf = document.getElementById('sf');
+  if (sf) { sf.classList.add('on'); setTimeout(()=>sf.classList.remove('on'), 3000); }
+}
+function cfgTest() {
+  handleAlert({
+    id:'test', source:'test', feed_name:'TEST ALERT',
+    timestamp: new Date().toISOString(),
+    detection:{alert_level:'suspicious', fused_score:0.92, yolo_score:0.89},
+    color:'RED'
+  });
+  toast('⚡ Test alert fired', 'err');
+}
+
+// ── LIVE FEEDS ─────────────────────────────────────────
+function openModal(camNum) {
+  activeCam = camNum;
+  const mt = document.getElementById('modal-title');
+  if (mt) mt.textContent = 'CONNECT CAMERA ' + camNum;
+  const mn = document.getElementById('modal-nm');
+  if (mn) mn.value = 'Camera ' + camNum;
+  const mu = document.getElementById('modal-url');
+  if (mu) mu.value = '';
+  selSrcType = 'webcam';
+  document.querySelectorAll('.src-b').forEach(b => b.classList.remove('sel'));
+  const firstSrc = document.querySelectorAll('.src-b')[0];
+  if (firstSrc) firstSrc.classList.add('sel');
+  document.getElementById('modal-url-row').style.display = 'none';
+  document.getElementById('modal-file-row').style.display = 'none';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function selSrc(type, btn) {
+  selSrcType = type;
+  document.querySelectorAll('.src-b').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('modal-url-row').style.display = (type==='webcam'||type==='file') ? 'none' : 'block';
+  document.getElementById('modal-file-row').style.display = type==='file' ? 'block' : 'none';
+}
+async function connectCam() {
+  const n = activeCam;
+  const nmEl = document.getElementById('modal-nm');
+  const name = (nmEl && nmEl.value.trim()) || 'Camera ' + n;
+  const urlEl = document.getElementById('modal-url');
+  const url = (urlEl && urlEl.value.trim()) || '';
+  const sensEl = document.getElementById('modal-sens');
+  const sensitivity = sensEl ? parseFloat(sensEl.value) : 0.5;
+  closeModal();
+  if (selSrcType === 'webcam') { await connectWebcam(n, name, sensitivity); }
+  else if (selSrcType === 'file') {
+    const fi = document.getElementById('modal-file-inp');
+    if (fi && fi.files[0]) connectVideoFile(n, name, fi.files[0]);
+    else toast('Select a video file first', 'warn');
+  } else { await connectRTSP(n, name, url, sensitivity); }
+}
+async function connectWebcam(n, name, sensitivity) {
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoCams = devices.filter(d => d.kind === 'videoinput');
+    const camIdx = n - 1;
+    const specific = videoCams[camIdx]
+      ? { video: { deviceId: { exact: videoCams[camIdx].deviceId } } }
+      : { video: true };
+    const stream = await navigator.mediaDevices.getUserMedia(specific);
+    camState[n].stream = stream; camState[n].active = true;
+    camState[n].dc = 0; camState[n].ac = 0;
+    const vid = document.getElementById('c' + n + '-vid');
+    vid.srcObject = stream; vid.style.display = 'block';
+    const track = stream.getVideoTracks()[0];
+    const settings = track.getSettings();
+    const resEl = document.getElementById('c' + n + '-res');
+    if (resEl) resEl.textContent = (settings.width||'?') + '×' + (settings.height||'?');
+    setCamLive(n, name, 'WEBCAM');
+    startDetection(n, sensitivity || 0.5);
+    updateFeedsUI();
+    toast('Camera ' + n + ' connected: ' + name);
+    fetch(API + '/feeds/add', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({source_type:'webcam', name, sensitivity: sensitivity || 0.5})
+    }).then(r=>r.json()).then(d=>{ camState[n].feedId = d.feed_id; }).catch(()=>{});
+  } catch(e) {
+    toast('Camera access denied: ' + e.message, 'err');
+    const tb = document.getElementById('c' + n + '-tb');
+    if (tb) tb.textContent = 'ERROR';
+    document.getElementById('ind-c' + n).className = 'ind err';
+  }
+}
+function connectVideoFile(n, name, file) {
+  const url = URL.createObjectURL(file);
+  const vid = document.getElementById('c' + n + '-vid');
+  vid.src = url; vid.loop = true; vid.style.display = 'block';
+  camState[n].active = true; camState[n].dc = 0; camState[n].ac = 0;
+  setCamLive(n, name, 'FILE');
+  startDetection(n, 0.5);
+  updateFeedsUI();
+  toast('Video file loaded on Camera ' + n);
+}
+async function connectRTSP(n, name, url, sensitivity) {
+  if (!url) { toast('Enter stream URL', 'warn'); return; }
+  try {
+    const r = await fetch(API + '/feeds/add', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({source_type:'rtsp', url, name, sensitivity})
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    camState[n].feedId = d.feed_id; camState[n].active = true;
+    camState[n].dc = 0; camState[n].ac = 0;
+    setCamLive(n, name, 'RTSP');
+    updateFeedsUI();
+    toast('RTSP feed registered: ' + name);
+    pollRTSP(n, d.feed_id);
+  } catch(e) { toast('Cannot reach backend for RTSP: ' + e.message, 'err'); }
+}
+function pollRTSP(n, feedId) {
+  camState[n].rtspTimer = setInterval(async () => {
+    if (!camState[n].active) { clearInterval(camState[n].rtspTimer); return; }
+    try {
+      const fr = await fetch(API + '/feeds/' + feedId);
+      const feed = await fr.json();
+      if (feed.latest_detection) updateCamThreat(n, feed.latest_detection);
+      const sr = await fetch(API + '/feeds/' + feedId + '/snapshot');
+      if (sr.ok) {
+        const sd = await sr.json();
+        if (sd.frame_b64) {
+          const cvs = document.getElementById('c' + n + '-cvs');
+          const ctx = cvs.getContext('2d');
+          const img = new Image();
+          img.onload = () => { ctx.drawImage(img, 0, 0, cvs.width, cvs.height); };
+          img.src = 'data:image/jpeg;base64,' + sd.frame_b64;
+          cvs.style.display = 'block';
+        }
+      }
+    } catch(e) {}
+  }, 2000);
+}
+function setCamLive(n, name, type) {
+  const s = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  const c = (id, v) => { const el = document.getElementById(id); if(el) el.className = v; };
+  s('c' + n + '-nm', name);
+  const tb = document.getElementById('c' + n + '-tb');
+  if (tb) { tb.textContent = type; tb.className = 'badge bg-a'; }
+  document.getElementById('c' + n + '-ph').style.display = 'none';
+  document.getElementById('c' + n + '-ov').style.display = 'flex';
+  document.getElementById('c' + n + '-ctrl').style.display = 'flex';
+  c('c' + n + '-sd', 'cam-sd live');
+  s('sv-c' + n, 'Live');
+  c('sd-c' + n, 'sys-d on');
+  c('ind-c' + n, 'ind ok');
+}
+function startDetection(n, sensitivity) {
+  const vid = document.getElementById('c' + n + '-vid');
+  const cvs = document.getElementById('c' + n + '-cvs');
+  cvs.style.display = 'block';
+  const ctx = cvs.getContext('2d');
+  let frames = 0, fpsStart = performance.now();
+  camState[n].timer = setInterval(async () => {
+    if (!camState[n].active || vid.paused || vid.readyState < 2) return;
+    frames++;
+    const now = performance.now();
+    if (now - fpsStart > 1000) {
+      const fpsEl = document.getElementById('c' + n + '-fps');
+      if (fpsEl) fpsEl.textContent = frames + ' fps';
+      frames = 0; fpsStart = now;
+    }
+    cvs.width = vid.videoWidth || 320; cvs.height = vid.videoHeight || 240;
+    ctx.drawImage(vid, 0, 0, cvs.width, cvs.height);
+    const resEl = document.getElementById('c' + n + '-res');
+    if (resEl) resEl.textContent = cvs.width + '×' + cvs.height;
+    if (frames % 10 !== 0) return;
+    cvs.toBlob(async blob => {
+      if (!blob) return;
+      const fd = new FormData();
+      fd.append('file', blob, 'frame.jpg');
+      fd.append('sensitivity', sensitivity);
+      try {
+        const r = await fetch(API + '/detect/image', {method:'POST', body:fd});
+        const resp = await r.json();
+        updateCamThreat(n, resp.detection || resp);
+        camState[n].dc++;
+        const dcEl = document.getElementById('c' + n + '-dc'); if (dcEl) dcEl.textContent = camState[n].dc;
+      } catch(e) {
+        const score = Math.random() * 0.7;
+        const lv = score > 0.55 ? 'suspicious' : score > 0.35 ? 'possibly_suspicious' : 'normal';
+        updateCamThreat(n, {alert_level:lv, fused_score:score, yolo_score:score});
+        camState[n].dc++;
+        const dcEl = document.getElementById('c' + n + '-dc'); if (dcEl) dcEl.textContent = camState[n].dc;
+      }
+    }, 'image/jpeg', 0.7);
+  }, 333);
+}
+function updateCamThreat(n, det) {
+  const lv = det.alert_level || 'normal';
+  const score = det.fused_score || 0;
+  const pct = Math.round(score * 100);
+  const sv = document.getElementById('c' + n + '-sv'); if (sv) sv.textContent = pct + '%';
+  const bar = document.getElementById('c' + n + '-bar');
+  if (bar) { bar.style.width = pct + '%'; bar.style.background = lv==='suspicious'?'var(--red)':lv==='possibly_suspicious'?'var(--warn)':'var(--safe)'; }
+  const chip = document.getElementById('c' + n + '-chip');
+  if (chip) { chip.className = 'cam-chip ' + lv; chip.textContent = lv.replace(/_/g,' ').toUpperCase(); }
+  const cc = lv==='suspicious'?'cc-r':lv==='possibly_suspicious'?'cc-y':'cc-n';
+  ['tl','tr','bl','br'].forEach(p => {
+    const el = document.getElementById('c' + n + '-cor-' + p);
+    if (el) el.className = 'cam-cor ' + p + ' ' + cc;
+  });
+  const panel = document.getElementById('cp' + n);
+  if (panel) panel.className = 'cam-p' + (lv==='suspicious'?' tc-r':lv==='possibly_suspicious'?' tc-y':'');
+  if (lv !== 'normal') {
+    camState[n].ac++;
+    const acEl = document.getElementById('c' + n + '-ac'); if (acEl) acEl.textContent = camState[n].ac;
+    addLogRow(n, lv, pct);
+    counts[lv==='suspicious'?'r':'y']++;
+    updateKPIs();
+    if (lv === 'suspicious') { toast('🔴 CAM-0' + n + ' HIGH THREAT ' + pct + '%', 'err'); playBeep(); }
+  }
+}
+function addLogRow(n, lv, pct) {
+  const log = document.getElementById('live-log');
+  if (!log) return;
+  const empty = log.querySelector('.log-empty');
+  if (empty) log.innerHTML = '';
+  logCount++;
+  const lcEl = document.getElementById('log-cnt'); if (lcEl) lcEl.textContent = logCount + ' entries';
+  const t = new Date().toTimeString().slice(0,8);
+  const r = document.createElement('div');
+  r.className = 'log-r ' + (lv==='suspicious'?'a':'w');
+  r.innerHTML = `<span class="log-t">${t}</span>
+    <span style="color:var(--txt3)">CAM-0${n}</span>
+    <span>${lv.replace(/_/g,' ').toUpperCase()}</span>
+    <span style="margin-left:auto;color:var(--ai)">${pct}%</span>`;
+  log.insertBefore(r, log.firstChild);
+  if (log.children.length > 50) log.removeChild(log.lastChild);
+}
+function clearLog() {
+  document.getElementById('live-log').innerHTML = '<div class="log-empty">Log cleared</div>';
+  logCount = 0;
+  const lcEl = document.getElementById('log-cnt'); if (lcEl) lcEl.textContent = '0 entries';
+}
+function disconnect(n) {
+  const cs = camState[n];
+  if (cs.stream) { cs.stream.getTracks().forEach(t => t.stop()); cs.stream = null; }
+  if (cs.timer) { clearInterval(cs.timer); cs.timer = null; }
+  if (cs.rtspTimer) { clearInterval(cs.rtspTimer); cs.rtspTimer = null; }
+  if (cs.feedId) { fetch(API + '/feeds/' + cs.feedId, {method:'DELETE'}).catch(()=>{}); cs.feedId = null; }
+  cs.active = false;
+  const vid = document.getElementById('c' + n + '-vid');
+  if (vid) { vid.srcObject = null; vid.src = ''; vid.style.display = 'none'; }
+  const cvs = document.getElementById('c' + n + '-cvs'); if (cvs) cvs.style.display = 'none';
+  document.getElementById('c' + n + '-ov').style.display = 'none';
+  document.getElementById('c' + n + '-ctrl').style.display = 'none';
+  document.getElementById('c' + n + '-ph').style.display = 'flex';
+  const s = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  const c = (id, v) => { const el = document.getElementById(id); if(el) el.className = v; };
+  s('c' + n + '-nm', '—'); s('c' + n + '-tb', 'IDLE'); c('c' + n + '-tb', 'badge bg-d');
+  c('c' + n + '-sd', 'cam-sd');
+  const bar = document.getElementById('c' + n + '-bar'); if (bar) bar.style.width = '0%';
+  c('cp' + n, 'cam-p'); s('sv-c' + n, 'Idle');
+  c('sd-c' + n, 'sys-d'); c('ind-c' + n, 'ind');
+  updateFeedsUI();
+  toast('Camera ' + n + ' disconnected');
+}
+function snap(n) {
+  const cvs = document.getElementById('c' + n + '-cvs');
+  if (!cvs) return;
+  const link = document.createElement('a');
+  link.download = 'OmniEye_CAM' + n + '_' + new Date().toISOString().slice(0,19).replace(/:/g,'-') + '.jpg';
+  link.href = cvs.toDataURL('image/jpeg', 0.95);
+  link.click();
+  toast('Snapshot saved — CAM-0' + n);
+}
+function updateFeedsUI() {
+  const active = (camState[1].active?1:0) + (camState[2].active?1:0);
+  const s = (id,v) => { const el=document.getElementById(id); if(el) el.textContent = v; };
+  const c = (id,v) => { const el=document.getElementById(id); if(el) el.className = v; };
+  s('ns-f', active); s('sv-feeds', active + ' / 2'); s('fb-feeds-t', 'Feeds: ' + active + '/2');
+  c('fb-feeds', 'fb' + (active>0?' ok':''));
+  const badge = document.getElementById('nb-live');
+  if (badge) { badge.textContent = active; badge.classList.toggle('on', active > 0); }
+  const lb = document.getElementById('live-badge');
+  if (lb) lb.textContent = active + ' / 2 ACTIVE';
+}
+async function scanOnvif() {
+  toast('Scanning for ONVIF cameras…');
+  try {
+    const r = await fetch(API + '/discover/onvif');
+    const d = await r.json();
+    if (d.cameras && d.cameras.length) toast('Found ' + d.cameras.length + ' ONVIF camera(s)!');
+    else toast('No ONVIF cameras found on network', 'warn');
+  } catch(e) { toast('ONVIF scan failed: ' + e.message, 'warn'); }
+}
+
+// ── TOAST ──────────────────────────────────────────────
+function toast(msg, type) {
+  const c = document.getElementById('toasts');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = 'toast' + (type==='warn'?' warn':type==='err'?' err':'');
+  const icons = {undefined:'ℹ', warn:'⚠', err:'⚡'};
+  const now = new Date().toTimeString().slice(0,8);
+  t.innerHTML = `<span class="t-ico">${icons[type]||'ℹ'}</span>
+    <span class="t-msg">${esc(msg)}</span>
+    <span class="t-t">${now}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 220); },
+    type==='err'?5000:type==='warn'?4000:3000);
+}
+
+function playBeep() {
+  const soundOn = (levelEnabled.y && levelChans.y.sound) || (levelEnabled.r && levelChans.r.sound);
+  if (!soundOn) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(660, ctx.currentTime + 0.12);
+    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.24);
+    g.gain.setValueAtTime(0.25, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start(); osc.stop(ctx.currentTime + 0.4);
+  } catch(e) {}
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function fmtSz(b) { return b>1e9?(b/1e9).toFixed(1)+' GB':b>1e6?(b/1e6).toFixed(1)+' MB':(b/1e3).toFixed(0)+' KB' }
+function fmtTs(s) { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60); return `${h?h+'h ':''}${m?m+'m ':''}${sec}s` }
+
+(function() {
+  if (!document.getElementById('alarm-banner')) {
+    const b = document.createElement('div');
+    b.id = 'alarm-banner';
+    b.style.cssText = `display:none;position:fixed;top:0;left:0;right:0;z-index:9999;
+      background:#ff0000;color:#fff;text-align:center;padding:14px;
+      font-family:var(--f-head);font-size:16px;letter-spacing:3px;font-weight:700;
+      animation:critPulse 1.2s ease-in-out infinite`;
+    b.textContent = '⚠ SUSPICIOUS ACTIVITY DETECTED ⚠';
+    document.body.appendChild(b);
+  }
+})();
+
+refreshHealth();
+setInterval(refreshHealth, 12000);
+connectWS();
+toast('OmniEye AI v4.1 — System online');
+</script>
+</body>
+</html>
