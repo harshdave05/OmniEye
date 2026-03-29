@@ -112,14 +112,14 @@ ALERT_THROTTLE_SECONDS = 30   # min seconds between phone notifications for same
 # 1. Message @BotFather on Telegram → /newbot → copy token
 # 2. Message your bot once, then visit:
 #    https://api.telegram.org/bot<TOKEN>/getUpdates  → copy chat_id
-TELEGRAM_BOT_TOKEN = ""        # e.g. "7123456789:AAFxxx..."
-TELEGRAM_CHAT_ID   = ""        # e.g. "123456789"
+TELEGRAM_BOT_TOKEN = "8603769024:AAHQTzRhQFFBQG5_379HGnXoYEIfxOJCnMI"        # e.g. "7123456789:AAFxxx..."
+TELEGRAM_CHAT_ID   = "7455476355"        # e.g. "123456789"
 
 # ── ntfy.sh (FREE push notifications — no account needed) ─────
 # 1. Install the ntfy app on your phone (Android/iOS, free)
 # 2. Subscribe to any topic name you choose, e.g. "omnieye-abc123"
 # 3. Set NTFY_TOPIC to that same topic name
-NTFY_TOPIC = ""                # e.g. "omnieye-abc123"
+NTFY_TOPIC = "ElHyvuuXdexeOJzP"                # e.g. "omnieye-abc123"
 
 # ── Twilio (paid — ~$0.008/SMS) ───────────────────────────────
 TWILIO_ACCOUNT_SID = ""
@@ -324,7 +324,7 @@ async def _send_notifications(alert: dict):
 async def _telegram_send(message: str):
     if not HTTPX_AVAILABLE:
         return
-    url = f"https://api.telegram.org/bot8603769024:AAE6k_GdC1kCwcrRByVnuIbqoWsKaEWBjNo/sendMessage"
+    url = f"https://api.telegram.org/bot8603769024:AAHQTzRhQFFBQG5_379HGnXoYEIfxOJCnMI/sendMessage"
     async with httpx.AsyncClient(timeout=8) as client:
         await client.post(url, json={"chat_id":7455476355, "text": message})
     logger.info("Telegram notification sent")
