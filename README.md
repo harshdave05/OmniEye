@@ -1,70 +1,97 @@
-\# OmniEye AI — Suspicious Activity Detection System
+# 🧠 OmniEye AI — Suspicious Activity Detection
 
+🚀 Real-time AI surveillance system to detect suspicious human behavior from CCTV, webcam, or video feeds.
 
+---
 
-Military-grade real-time surveillance AI system.
+## 🎯 Overview
 
+OmniEye AI uses **computer vision + AI** to monitor environments and detect threats in real time.
+Built for **smart cities, security systems, and fraud prevention use cases**.
 
+---
 
-\## Features
+## ⚡ Features
 
-\- Live webcam detection
+* 🎥 Live webcam detection
+* 📡 CCTV / RTSP stream support
+* 📂 Video file analysis
+* 🚨 Real-time alerts (Telegram + WebSockets)
+* 📊 Report export (CSV / PDF)
+* 🧠 Pose-based behavior analysis
 
-\- CCTV/RTSP camera support
+---
 
-\- Pre-recorded video analysis
+## 🧠 Tech Stack
 
-\- Weapon detection ready
+* **AI/ML:** YOLOv8, MediaPipe, OpenCV
+* **Backend:** FastAPI, WebSockets
+* **Frontend:** HTML + JS
+* **Integration:** Telegram Bot API
 
-\- Real-time alerts via Telegram
+---
 
-\- Export reports as CSV/PDF
+## 🏗️ Architecture
 
+Frontend → FastAPI → AI Inference (YOLOv8 + Pose) → Alerts
 
+---
 
-\## Tech Stack
+## 🚀 Setup
 
-\- YOLOv8s (99.9% accuracy, trained on 200k images)
-
-\- MediaPipe pose detection
-
-\- FastAPI backend
-
-\- WebSocket real-time alerts
-
-
-
-\## Setup
-
-
-
-\### Install dependencies
-
+```bash
+git clone https://github.com/your-username/OmniEye-AI.git
+cd OmniEye-AI
 pip install -r requirements.txt
+python sentinel_backend.py
+```
 
+Open `omnieye.html` in browser
 
+---
 
-\### Run backend
+## 📂 Structure
 
-python sentinel\_backend.py
+```bash
+active_learning/  
+fusion/  
+inference/  
+models/  
+pose/  
+utils/  
+sentinel_backend.py  
+omnieye.html  
+```
 
+---
 
+## 📊 Model
 
-\### Open frontend
+* Trained on UCF-Crime, Violence Detection datasets
+* ~200K+ images
+* Optimized for real-time detection
 
-Open omnieye.html in browser
+---
 
+## 🚨 Alerts
 
+* Telegram notifications
+* Real-time WebSocket alerts
+* Event logging
 
-\## Model
+---
 
-Trained on:
+## 🎯 Use Cases
 
-\- UCF-Crime Dataset
+Smart Cities • ATM Security • Retail Monitoring • Law Enforcement
 
-\- Violence vs Non-Violence 11K Dataset
+---
 
-\- Smart-City CCTV Violence Detection Dataset
+## 📫 Contact
 
-\- Total: 200,000 images
+Harsh Dave
+LinkedIn: https://www.linkedin.com/in/harsh-dave-0a0304333/ | Email: harshdavee1@gmail.com
 
+---
+
+⭐ Star this repo if you like it!
