@@ -1,0 +1,15 @@
+fastapi==0.135.1
+uvicorn==0.41.0
+opencv-python==4.13.0.92
+ultralytics==8.4.21
+mediapipe==0.10.14
+loguru==0.7.3
+python-multipart==0.0.22
+websockets
+httpx
+reportlab
+numpy
+torch
+torchvision
+albumentations
+aiofiles
