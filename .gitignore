@@ -5,7 +5,8 @@ flagged_frames/
 *.zip
 
 # Model weights (too large for GitHub)
-# models/checkpoints/best.pt
+*.pt
+!models/checkpoints/best.pt
 
 # Python cache
 __pycache__/
@@ -13,10 +14,16 @@ __pycache__/
 *.pyo
 .env
 
-# Training runs
-runs/
-*.pt
-!models/checkpoints/best.pt
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 
 # Logs
 logs/
@@ -26,12 +33,8 @@ logs/
 .DS_Store
 Thumbs.db
 
-# IDE
-.vscode/
-.idea/
-
+# Secrets
 serviceAccountKey.json
-
-.venv/
-__pycache__/
-*.pyc
+*.key
+*.pem
+.env.local
