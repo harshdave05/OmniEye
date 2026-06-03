@@ -101,23 +101,6 @@ python sentinel_backend.py
 
 ---
 
-## 📸 Screenshots
-
-> Add screenshots here for:
-
-* Dashboard
-* Detection Output
-* Alert System
-* Live Stream
-
-Example:
-
-```md
-![Dashboard](screenshots/dashboard.png)
-```
-
----
-
 ## 🔮 Future Improvements
 
 * Multi-camera support
