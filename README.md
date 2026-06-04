@@ -118,6 +118,7 @@ python sentinel_backend.py
 ### Harsh Dave
 
 * GitHub: https://github.com/harshdave05
+* LinkedIn: https://www.linkedin.com/in/harshdave05/
 
 ---
 
